@@ -1100,3 +1100,184 @@
     height: 43px;
   }
 }
+
+/* =========================
+   MODAL - RECUPERAÇÃO DE SENHA
+========================= */
+
+.botao-link {
+  border: none;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.modal-recuperacao {
+  position: relative;
+  width: 100%;
+  max-width: 470px;
+  padding: 36px;
+  border-radius: 22px;
+  background: #e6e1cf;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  color: #665c52;
+  animation: aparecerModal 0.2s ease;
+}
+
+.modal-recuperacao .fechar-modal {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+}
+
+.modal-etiqueta {
+  display: block;
+  margin-bottom: 8px;
+  padding-right: 45px;
+  color: #cc5b14;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 1.8px;
+}
+
+.modal-recuperacao h2 {
+  margin: 0 0 12px;
+  color: #665c52;
+  font-size: 28px;
+}
+
+.modal-recuperacao > p,
+.recuperacao-sucesso p {
+  margin: 0 0 25px;
+  color: #665c52;
+  line-height: 1.6;
+}
+
+.modal-recuperacao .campo {
+  margin-bottom: 20px;
+}
+
+.modal-recuperacao .campo label {
+  color: #665c52;
+}
+
+.modal-recuperacao .campo input {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.modal-recuperacao .botao-entrar {
+  width: 100%;
+}
+
+/* Confirmação do envio */
+
+.recuperacao-sucesso {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 0 5px;
+  text-align: center;
+}
+
+.icone-sucesso {
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  border-radius: 50%;
+  background: #74b3a7;
+  color: #ffffff;
+  font-size: 36px;
+  font-weight: bold;
+}
+
+.recuperacao-sucesso .modal-etiqueta {
+  padding-right: 0;
+}
+
+.recuperacao-sucesso h2 {
+  margin-bottom: 10px;
+}
+
+.recuperacao-sucesso strong {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 25px;
+  padding: 12px 15px;
+  overflow-wrap: anywhere;
+  border-radius: 10px;
+  background: rgba(163, 204, 175, 0.4);
+  color: #665c52;
+}
+
+/* Celular */
+
+@media (max-width: 600px) {
+  .modal-recuperacao {
+    padding: 30px 22px;
+    border-radius: 18px;
+  }
+
+  .modal-recuperacao h2 {
+    font-size: 24px;
+  }
+}
+
+/* =========================
+   MODAL - CADASTRO CONCLUÍDO
+========================= */
+
+.modal-cadastro-sucesso {
+  width: 100%;
+  max-width: 470px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 36px;
+  border-radius: 22px;
+  background: #e6e1cf;
+  color: #665c52;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: aparecerModal 0.2s ease;
+}
+
+.modal-cadastro-sucesso .icone-sucesso {
+  margin-bottom: 20px;
+}
+
+.modal-cadastro-sucesso .modal-etiqueta {
+  padding: 0;
+  margin-bottom: 8px;
+}
+
+.modal-cadastro-sucesso h2 {
+  margin: 0 0 12px;
+  color: #665c52;
+  font-size: 27px;
+}
+
+.modal-cadastro-sucesso p {
+  margin: 0 0 26px;
+  color: #665c52;
+  line-height: 1.6;
+}
+
+.modal-cadastro-sucesso .botao-entrar {
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .modal-cadastro-sucesso {
+    padding: 32px 22px;
+    border-radius: 18px;
+  }
+
+  .modal-cadastro-sucesso h2 {
+    font-size: 23px;
+  }
+}
