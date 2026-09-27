@@ -1,46 +1,143 @@
+import { supabase } from './supabase'
+
 import {
-  pacientesMock,
-  agendamentosMock,
-} from '../data/agendaMock'
+  buscarPacientesSupabase,
+} from './pacienteService'
 
-// Por enquanto usamos os dados simulados.
-// Depois essa configuração poderá apontar para o Supabase.
-const USAR_SUPABASE = false
-
-// Criamos uma cópia em memória.
-// Assim podemos adicionar agendamentos durante o uso do sistema
-// sem alterar diretamente o arquivo agendaMock.js.
-let agendamentosTemporarios = [...agendamentosMock]
+// =========================================
+// PACIENTES
+// =========================================
 
 export async function buscarPacientes() {
-  if (USAR_SUPABASE) {
-    // Futuramente:
-    // return buscarPacientesSupabase()
-  }
-
-  return pacientesMock
+  return buscarPacientesSupabase()
 }
+
+// =========================================
+// ADAPTAR AGENDAMENTO
+// Banco → Frontend
+// =========================================
+//
+// O banco guarda data e horário juntos:
+//
+// Appointment_Date_Time
+//
+// Mas nossos componentes trabalham com:
+//
+// data: "2026-09-27"
+// horario: "14:30"
+//
+// Esta função faz essa tradução.
+// =========================================
+
+function adaptarAgendamento(
+  agendamento
+) {
+  const dataHora = new Date(
+    agendamento.Appointment_Date_Time
+  )
+
+  const ano =
+    dataHora.getFullYear()
+
+  const mes = String(
+    dataHora.getMonth() + 1
+  ).padStart(2, '0')
+
+  const dia = String(
+    dataHora.getDate()
+  ).padStart(2, '0')
+
+  const hora = String(
+    dataHora.getHours()
+  ).padStart(2, '0')
+
+  const minuto = String(
+    dataHora.getMinutes()
+  ).padStart(2, '0')
+
+  return {
+    id:
+      agendamento.Appointment_ID,
+
+    pacienteId:
+      agendamento.Patient_ID,
+
+    data:
+      `${ano}-${mes}-${dia}`,
+
+    horario:
+      `${hora}:${minuto}`,
+
+    duracao:
+      agendamento.Time_Session,
+
+    observacao:
+      agendamento.Observation || '',
+  }
+}
+
+// =========================================
+// BUSCAR TODOS OS AGENDAMENTOS
+// =========================================
 
 export async function buscarAgendamentos() {
-  if (USAR_SUPABASE) {
-    // Futuramente:
-    // return buscarAgendamentosSupabase()
+  const { data, error } =
+    await supabase
+      .from('Appointments')
+      .select(`
+        Appointment_ID,
+        Patient_ID,
+        Appointment_Date_Time,
+        Time_Session,
+        Observation
+      `)
+      .order(
+        'Appointment_Date_Time',
+        {
+          ascending: true,
+        }
+      )
+
+  if (error) {
+    console.error(
+      'Erro ao buscar agendamentos:',
+      error
+    )
+
+    throw error
   }
 
-  return agendamentosTemporarios
-}
-
-export async function buscarAgendamentosPorPaciente(pacienteId) {
-  const agendamentos = await buscarAgendamentos()
-
-  return agendamentos.filter(
-    (agendamento) =>
-      agendamento.pacienteId === pacienteId
+  return (data || []).map(
+    adaptarAgendamento
   )
 }
 
-export async function buscarAgendamentosPorData(data) {
-  const agendamentos = await buscarAgendamentos()
+// =========================================
+// BUSCAR POR PACIENTE
+// =========================================
+
+export async function buscarAgendamentosPorPaciente(
+  pacienteId
+) {
+  const agendamentos =
+    await buscarAgendamentos()
+
+  return agendamentos.filter(
+    (agendamento) =>
+      agendamento.pacienteId ===
+      pacienteId
+  )
+}
+
+// =========================================
+// BUSCAR POR DATA
+// =========================================
+
+export async function buscarAgendamentosPorData(
+  data
+) {
+  const agendamentos =
+    await buscarAgendamentos()
 
   return agendamentos.filter(
     (agendamento) =>
@@ -48,34 +145,106 @@ export async function buscarAgendamentosPorData(data) {
   )
 }
 
+// =========================================
+// BUSCAR POR DATA + PACIENTE
+// =========================================
+
 export async function buscarAgendamentosPorDataEPaciente(
   data,
   pacienteId
 ) {
-  const agendamentos = await buscarAgendamentos()
+  const agendamentos =
+    await buscarAgendamentos()
 
   return agendamentos.filter(
     (agendamento) =>
       agendamento.data === data &&
-      agendamento.pacienteId === pacienteId
+      agendamento.pacienteId ===
+        pacienteId
   )
 }
 
-export async function criarAgendamento(novoAgendamento) {
-  if (USAR_SUPABASE) {
-    // Futuramente:
-    // return criarAgendamentoSupabase(novoAgendamento)
+// =========================================
+// CRIAR AGENDAMENTO
+// =========================================
+
+export async function criarAgendamento(
+  novoAgendamento
+) {
+  // O formulário entrega:
+  //
+  // data: "2026-09-27"
+  // horario: "14:30"
+  //
+  // Aqui juntamos os dois antes
+  // de enviar ao Supabase.
+
+  const dataHora = new Date(
+    `${novoAgendamento.data}T${novoAgendamento.horario}:00`
+  )
+
+  const {
+    data,
+    error,
+  } = await supabase
+    .from('Appointments')
+    .insert({
+      Patient_ID:
+        novoAgendamento.pacienteId,
+
+      Appointment_Date_Time:
+        dataHora.toISOString(),
+
+      Time_Session:
+        novoAgendamento.duracao,
+
+      Observation:
+        novoAgendamento.observacao ||
+        null,
+    })
+    .select(`
+      Appointment_ID,
+      Patient_ID,
+      Appointment_Date_Time,
+      Time_Session,
+      Observation
+    `)
+    .single()
+
+  if (error) {
+    console.error(
+      'Erro ao criar agendamento:',
+      error
+    )
+
+    throw error
   }
 
-  const agendamentoCriado = {
-    id: `agendamento-${Date.now()}`,
-    ...novoAgendamento,
+  return adaptarAgendamento(data)
+}
+// =========================================
+// EXCLUIR AGENDAMENTO
+// =========================================
+
+export async function excluirAgendamento(
+  agendamentoId
+) {
+  const { error } = await supabase
+    .from('Appointments')
+    .delete()
+    .eq(
+      'Appointment_ID',
+      agendamentoId
+    )
+
+  if (error) {
+    console.error(
+      'Erro ao excluir agendamento:',
+      error
+    )
+
+    throw error
   }
 
-  agendamentosTemporarios = [
-    ...agendamentosTemporarios,
-    agendamentoCriado,
-  ]
-
-  return agendamentoCriado
+  return true
 }

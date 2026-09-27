@@ -326,21 +326,6 @@
   color: #a3ccaf;
 }
 
-.dashboard-nav a:first-child::after {
-  content: "";
-
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -10px;
-
-  height: 3px;
-
-  border-radius: 5px;
-
-  background: #cc5b14;
-}
-
 /* Usuário */
 
 .dashboard-usuario {
@@ -3360,4 +3345,955 @@
   .dashboard-paciente-acoes {
     grid-template-columns: 1fr;
   }
+}
+/* =========================================================
+   PÁGINA DE PACIENTES
+   ========================================================= */
+
+.pagina-pacientes {
+  min-height: 100vh;
+
+  background:
+    linear-gradient(
+      rgba(116, 179, 167, 0.18),
+      rgba(116, 179, 167, 0.18)
+    ),
+    url('./assets/fundo.jpg');
+
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.pacientes-conteudo {
+  width: min(1280px, calc(100% - 60px));
+
+  min-height: 720px;
+
+  display: grid;
+
+  grid-template-columns:
+    320px
+    minmax(0, 1fr);
+
+  margin: 40px auto;
+
+  overflow: hidden;
+
+  background: #e6e1cf;
+
+  border-radius: 24px;
+
+  box-shadow:
+    0 18px 45px
+    rgba(102, 92, 82, 0.16);
+}
+
+
+/* =========================================================
+   LISTA LATERAL
+   ========================================================= */
+
+.pacientes-lateral {
+  padding: 30px 22px;
+
+  background:
+    rgba(163, 204, 175, 0.4);
+
+  border-right:
+    1px solid
+    rgba(102, 92, 82, 0.1);
+}
+
+.pacientes-lateral-titulo span {
+  color: #cc5b14;
+
+  font-size: 0.7rem;
+  font-weight: 800;
+
+  letter-spacing: 0.13em;
+}
+
+.pacientes-lateral-titulo h1 {
+  margin: 5px 0 20px;
+
+  color: #665c52;
+
+  font-size: 1.45rem;
+}
+
+.pacientes-pesquisa {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 13px 15px;
+
+  border:
+    1px solid
+    rgba(102, 92, 82, 0.15);
+
+  border-radius: 12px;
+
+  outline: none;
+
+  background:
+    rgba(255, 255, 255, 0.55);
+
+  color: #665c52;
+}
+
+.pacientes-pesquisa:focus {
+  border-color: #74b3a7;
+}
+
+.pacientes-lista {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+
+  margin-top: 20px;
+}
+
+.pacientes-item {
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 12px;
+
+  border: 0;
+
+  border-radius: 14px;
+
+  background: transparent;
+
+  color: #665c52;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background 0.18s ease,
+    transform 0.18s ease;
+}
+
+.pacientes-item:hover {
+  transform:
+    translateX(3px);
+
+  background:
+    rgba(255, 255, 255, 0.4);
+}
+
+.pacientes-item-ativo {
+  background:
+    rgba(255, 255, 255, 0.7);
+}
+
+.pacientes-avatar {
+  flex-shrink: 0;
+
+  width: 43px;
+  height: 43px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #74b3a7;
+
+  color: white;
+
+  font-weight: 800;
+}
+
+.pacientes-item > div:last-child {
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 2px;
+}
+
+.pacientes-item strong {
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+.pacientes-item span {
+  color:
+    rgba(102, 92, 82, 0.62);
+
+  font-size: 0.74rem;
+}
+
+
+/* =========================================================
+   ÁREA PRINCIPAL
+   ========================================================= */
+
+.paciente-detalhes {
+  position: relative;
+
+  padding: 42px;
+
+  color: #665c52;
+}
+
+.paciente-sem-selecao {
+  min-height: 560px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+}
+
+.paciente-sem-selecao-icone {
+  width: 86px;
+  height: 86px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 20px;
+
+  border-radius: 50%;
+
+  background:
+    rgba(116, 179, 167, 0.25);
+
+  color: #665c52;
+
+  font-size: 2rem;
+}
+
+.paciente-sem-selecao > span {
+  color: #cc5b14;
+
+  font-size: 0.7rem;
+  font-weight: 800;
+
+  letter-spacing: 0.13em;
+}
+
+.paciente-sem-selecao h2 {
+  margin: 7px 0;
+
+  font-size: 1.6rem;
+}
+
+.paciente-sem-selecao p {
+  max-width: 430px;
+
+  margin: 0;
+
+  color:
+    rgba(102, 92, 82, 0.7);
+
+  line-height: 1.55;
+}
+
+
+/* =========================================================
+   CABEÇALHO DO PACIENTE
+   ========================================================= */
+
+.paciente-detalhes-cabecalho {
+  display: flex;
+
+  align-items: center;
+
+  gap: 18px;
+
+  padding-bottom: 25px;
+
+  border-bottom:
+    1px solid
+    rgba(102, 92, 82, 0.12);
+}
+
+.paciente-detalhes-avatar {
+  width: 70px;
+  height: 70px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #74b3a7;
+
+  color: white;
+
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.paciente-detalhes-cabecalho span {
+  color: #cc5b14;
+
+  font-size: 0.7rem;
+  font-weight: 800;
+
+  letter-spacing: 0.13em;
+}
+
+.paciente-detalhes-cabecalho h1 {
+  margin: 3px 0;
+
+  color: #665c52;
+
+  font-size: 1.7rem;
+}
+
+.paciente-detalhes-cabecalho p {
+  margin: 0;
+
+  color:
+    rgba(102, 92, 82, 0.65);
+}
+
+
+/* =========================================================
+   RESUMO
+   ========================================================= */
+
+.paciente-resumo-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 15px;
+
+  margin-top: 25px;
+}
+
+.paciente-resumo-card {
+  padding: 20px;
+
+  background:
+    rgba(163, 204, 175, 0.32);
+
+  border:
+    1px solid
+    rgba(116, 179, 167, 0.15);
+
+  border-radius: 16px;
+}
+
+.paciente-resumo-card span {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #cc5b14;
+
+  font-size: 0.68rem;
+  font-weight: 800;
+
+  letter-spacing: 0.1em;
+}
+
+.paciente-resumo-card strong {
+  display: block;
+
+  color: #665c52;
+
+  font-size: 1.5rem;
+}
+
+.paciente-resumo-card p {
+  margin: 4px 0 0;
+
+  color:
+    rgba(102, 92, 82, 0.65);
+
+  font-size: 0.8rem;
+}
+
+
+/* =========================================================
+   EMOÇÕES
+   ========================================================= */
+
+.paciente-emocoes {
+  margin-top: 35px;
+}
+
+.paciente-secao-titulo span {
+  color: #cc5b14;
+
+  font-size: 0.68rem;
+  font-weight: 800;
+
+  letter-spacing: 0.12em;
+}
+
+.paciente-secao-titulo h2 {
+  margin: 5px 0;
+
+  color: #665c52;
+}
+
+.paciente-secao-titulo p {
+  margin: 0;
+
+  color:
+    rgba(102, 92, 82, 0.65);
+}
+
+.emocoes-resumo {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 10px;
+
+  margin-top: 20px;
+}
+
+.emocao-resumo-item {
+  min-width: 110px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 3px;
+
+  padding: 12px 16px;
+
+  border-radius: 12px;
+
+  background:
+    rgba(255, 255, 255, 0.48);
+}
+
+.emocao-resumo-item strong {
+  color: #665c52;
+}
+
+.emocao-resumo-item span {
+  color:
+    rgba(102, 92, 82, 0.6);
+
+  font-size: 0.72rem;
+}
+
+
+/* =========================================================
+   HISTÓRICO
+   ========================================================= */
+
+.emocao-historico {
+  margin-top: 30px;
+
+  padding-top: 25px;
+
+  border-top:
+    1px solid
+    rgba(102, 92, 82, 0.12);
+}
+
+.emocao-historico h3 {
+  margin:
+    0 0 15px;
+
+  color: #665c52;
+}
+
+.emocao-historico-item {
+  display: flex;
+
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 11px 5px;
+
+  border-bottom:
+    1px solid
+    rgba(102, 92, 82, 0.08);
+}
+
+.emocao-historico-marcador {
+  width: 10px;
+  height: 10px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: #74b3a7;
+}
+
+.emocao-historico-item > div:last-child {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 2px;
+}
+
+.emocao-historico-item strong {
+  color: #665c52;
+}
+
+.emocao-historico-item span {
+  color:
+    rgba(102, 92, 82, 0.62);
+
+  font-size: 0.75rem;
+}
+
+
+/* =========================================================
+   MENSAGENS
+   ========================================================= */
+
+.pacientes-mensagem {
+  color:
+    rgba(102, 92, 82, 0.7);
+
+  font-size: 0.85rem;
+}
+
+.pacientes-erro {
+  margin-top: 20px;
+
+  padding: 13px 16px;
+
+  border-radius: 12px;
+
+  background:
+    rgba(204, 91, 20, 0.1);
+
+  color: #cc5b14;
+
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   RESPONSIVO
+   ========================================================= */
+
+@media (max-width: 850px) {
+
+  .pacientes-conteudo {
+    width:
+      calc(100% - 30px);
+
+    grid-template-columns: 1fr;
+
+    margin: 20px auto;
+  }
+
+  .pacientes-lateral {
+    border-right: 0;
+
+    border-bottom:
+      1px solid
+      rgba(102, 92, 82, 0.1);
+  }
+
+  .paciente-detalhes {
+    padding: 28px 22px;
+  }
+
+  .paciente-resumo-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dashboard-nav .nav-ativo {
+  position: relative;
+}
+
+.dashboard-nav .nav-ativo::after {
+  content: '';
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  bottom: -10px;
+
+  height: 3px;
+
+  background: #cc5b14;
+
+  border-radius: 3px;
+}
+
+/* =========================================================
+   DASHBOARD - RELATÓRIO EMOCIONAL
+   ========================================================= */
+
+.dashboard-emocoes {
+  margin-top: 26px;
+  padding: 22px;
+
+  background: rgba(255, 255, 255, 0.38);
+
+  border: 1px solid rgba(116, 179, 167, 0.18);
+  border-radius: 17px;
+}
+
+.dashboard-emocoes-cabecalho {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.dashboard-emocoes-cabecalho > div:first-child > span {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #cc5b14;
+
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+}
+
+.dashboard-emocoes-cabecalho h3 {
+  margin: 0;
+
+  color: #665c52;
+
+  font-size: 1.1rem;
+}
+
+
+/* FILTROS */
+
+.dashboard-filtro-emocoes {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 5px;
+
+  padding: 4px;
+
+  background: rgba(163, 204, 175, 0.25);
+
+  border-radius: 10px;
+}
+
+.dashboard-filtro-emocoes button {
+  padding: 7px 10px;
+
+  border: 0;
+  border-radius: 7px;
+
+  background: transparent;
+  color: rgba(102, 92, 82, 0.72);
+
+  font-size: 0.69rem;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.dashboard-filtro-emocoes button:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.dashboard-filtro-emocoes button.ativo {
+  background: #cc5b14;
+  color: #fff;
+
+  box-shadow:
+    0 3px 8px rgba(204, 91, 20, 0.18);
+}
+
+
+/* RESUMO */
+
+.dashboard-emocoes-resumo {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 10px;
+
+  margin-top: 18px;
+}
+
+.dashboard-emocoes-resumo > div {
+  padding: 12px 14px;
+
+  background: rgba(163, 204, 175, 0.24);
+
+  border-radius: 11px;
+}
+
+.dashboard-emocoes-resumo span {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #cc5b14;
+
+  font-size: 0.61rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.dashboard-emocoes-resumo strong {
+  display: block;
+
+  color: #665c52;
+
+  font-size: 0.95rem;
+}
+
+.dashboard-emocoes-resumo small {
+  display: block;
+
+  margin-top: 3px;
+
+  color: rgba(102, 92, 82, 0.58);
+
+  font-size: 0.65rem;
+}
+
+
+/* =========================================================
+   GRÁFICO
+   ========================================================= */
+
+.dashboard-grafico-emocoes {
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+
+  margin-top: 20px;
+}
+
+.dashboard-grafico-linha {
+  display: grid;
+
+  grid-template-columns:
+    100px
+    minmax(0, 1fr);
+
+  align-items: center;
+
+  gap: 12px;
+}
+
+.dashboard-grafico-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 6px;
+}
+
+.dashboard-grafico-info strong {
+  overflow: hidden;
+
+  color: #665c52;
+
+  font-size: 0.76rem;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dashboard-grafico-info span {
+  min-width: 22px;
+
+  color: #cc5b14;
+
+  font-size: 0.72rem;
+  font-weight: 800;
+
+  text-align: right;
+}
+
+.dashboard-grafico-trilho {
+  width: 100%;
+  height: 11px;
+
+  overflow: hidden;
+
+  background: rgba(102, 92, 82, 0.1);
+
+  border-radius: 999px;
+}
+
+.dashboard-grafico-barra {
+  min-width: 5px;
+  height: 100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      #74b3a7,
+      #a3ccaf
+    );
+
+  border-radius: 999px;
+
+  transition: width 0.35s ease;
+}
+
+
+/* SEM REGISTROS */
+
+.dashboard-grafico-vazio {
+  min-height: 110px;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  margin-top: 18px;
+
+  background: rgba(163, 204, 175, 0.14);
+
+  border-radius: 12px;
+
+  color: rgba(102, 92, 82, 0.7);
+
+  text-align: center;
+}
+
+.dashboard-grafico-vazio strong {
+  color: #665c52;
+
+  font-size: 0.85rem;
+}
+
+.dashboard-grafico-vazio span {
+  font-size: 0.73rem;
+}
+
+
+/* =========================================================
+   AGORA SÃO 3 AÇÕES, NÃO 4
+   ========================================================= */
+
+.dashboard-paciente-acoes {
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+}
+
+
+/* =========================================================
+   RESPONSIVO
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .dashboard-emocoes-cabecalho {
+    flex-direction: column;
+  }
+
+  .dashboard-filtro-emocoes {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .dashboard-filtro-emocoes button {
+    flex: 1;
+  }
+
+  .dashboard-paciente-acoes {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .dashboard-emocoes-resumo {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-grafico-linha {
+    grid-template-columns: 85px minmax(0, 1fr);
+  }
+}
+/* =========================================
+   BOTÃO EXCLUIR AGENDAMENTO
+========================================= */
+
+.agenda-excluir {
+  border: none;
+  border-radius: 8px;
+
+  padding: 8px 14px;
+
+  background: #cc5b14;
+  color: #ffffff;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.agenda-excluir:hover {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 4px 10px rgba(204, 91, 20, 0.25);
+}
+
+.agenda-excluir:active {
+  transform: translateY(0);
+}
+
+.agenda-excluir:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }

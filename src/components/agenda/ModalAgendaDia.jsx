@@ -7,6 +7,7 @@ function ModalAgendaDia({
   pacienteSelecionado,
   onFechar,
   onCriarAgendamento,
+  onExcluirAgendamento,
 }) {
   const [filtroPaciente, setFiltroPaciente] = useState(
     pacienteSelecionado?.id || 'todos'
@@ -17,6 +18,12 @@ function ModalAgendaDia({
   )
 
   const [mostrarResultados, setMostrarResultados] =
+    useState(false)
+
+  const [agendamentoParaExcluir, setAgendamentoParaExcluir] =
+    useState(null)
+
+  const [excluindo, setExcluindo] =
     useState(false)
 
   const pacientesFiltrados = pacientes.filter((paciente) =>
@@ -80,6 +87,37 @@ function ModalAgendaDia({
       month: 'long',
       year: 'numeric',
     })
+  }
+
+  function abrirConfirmacaoExclusao(agendamento) {
+    setAgendamentoParaExcluir(agendamento)
+  }
+
+  function cancelarExclusao() {
+    setAgendamentoParaExcluir(null)
+  }
+
+  async function confirmarExclusao() {
+    if (!agendamentoParaExcluir) {
+      return
+    }
+
+    try {
+      setExcluindo(true)
+
+      await onExcluirAgendamento(
+        agendamentoParaExcluir.id
+      )
+
+      setAgendamentoParaExcluir(null)
+    } catch (erro) {
+      console.error(
+        'Erro ao excluir agendamento:',
+        erro
+      )
+    } finally {
+      setExcluindo(false)
+    }
   }
 
   return (
@@ -175,8 +213,13 @@ function ModalAgendaDia({
                   </div>
 
                   <div>
-                    <strong>{paciente.nome}</strong>
-                    <span>Filtrar agenda</span>
+                    <strong>
+                      {paciente.nome}
+                    </strong>
+
+                    <span>
+                      Filtrar agenda
+                    </span>
                   </div>
                 </button>
               ))}
@@ -193,6 +236,7 @@ function ModalAgendaDia({
             !mostrarResultados && (
               <div className="agenda-filtro-selecionado">
                 Exibindo agenda de{' '}
+
                 <strong>
                   {pacienteFiltroAtual.nome}
                 </strong>
@@ -223,8 +267,24 @@ function ModalAgendaDia({
                   </span>
 
                   {agendamento.observacao && (
-                    <p>{agendamento.observacao}</p>
+                    <p>
+                      {agendamento.observacao}
+                    </p>
                   )}
+                </div>
+
+                <div className="agenda-dia-acoes">
+                  <button
+                    type="button"
+                    className="agenda-excluir"
+                    onClick={() =>
+                      abrirConfirmacaoExclusao(
+                        agendamento
+                      )
+                    }
+                  >
+                    Excluir
+                  </button>
                 </div>
               </article>
             ))
@@ -261,6 +321,55 @@ function ModalAgendaDia({
             + Criar agendamento
           </button>
         </div>
+
+        {agendamentoParaExcluir && (
+          <div className="agenda-confirmar-exclusao">
+            <div className="agenda-confirmar-exclusao-caixa">
+              <h3>
+                Excluir agendamento?
+              </h3>
+
+              <p>
+                O atendimento de{' '}
+
+                <strong>
+                  {buscarNomePaciente(
+                    agendamentoParaExcluir.pacienteId
+                  )}
+                </strong>
+
+                {' '}às{' '}
+
+                <strong>
+                  {agendamentoParaExcluir.horario}
+                </strong>
+
+                {' '}será excluído.
+              </p>
+
+              <div className="agenda-confirmar-exclusao-acoes">
+                <button
+                  type="button"
+                  onClick={cancelarExclusao}
+                  disabled={excluindo}
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  type="button"
+                  className="agenda-excluir"
+                  onClick={confirmarExclusao}
+                  disabled={excluindo}
+                >
+                  {excluindo
+                    ? 'Excluindo...'
+                    : 'Excluir'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </section>
     </div>
   )

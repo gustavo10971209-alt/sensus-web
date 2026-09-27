@@ -5,6 +5,7 @@ import {
   buscarPacientes,
   buscarAgendamentos,
   criarAgendamento,
+  excluirAgendamento,
 } from '../services/agendaService'
 
 import ListaPacientes from '../components/agenda/ListaPacientes'
@@ -16,24 +17,24 @@ import ConfirmacaoAgendamento from '../components/agenda/ConfirmacaoAgendamento'
 function Agendamentos() {
   const navigate = useNavigate()
 
-  // =========================
+  // =========================================
   // DADOS
-  // =========================
+  // =========================================
 
   const [pacientes, setPacientes] = useState([])
   const [agendamentos, setAgendamentos] = useState([])
 
-  // =========================
+  // =========================================
   // PACIENTES
-  // =========================
+  // =========================================
 
   const [pesquisa, setPesquisa] = useState('')
   const [pacienteSelecionado, setPacienteSelecionado] =
     useState(null)
 
-  // =========================
+  // =========================================
   // CALENDÁRIO
-  // =========================
+  // =========================================
 
   const hoje = new Date()
 
@@ -45,16 +46,12 @@ function Agendamentos() {
     )
   )
 
-  // =========================
-  // MODAL DO DIA
-  // =========================
+  // =========================================
+  // MODAIS
+  // =========================================
 
   const [diaSelecionado, setDiaSelecionado] =
     useState(null)
-
-  // =========================
-  // NOVO AGENDAMENTO
-  // =========================
 
   const [
     mostrarNovoAgendamento,
@@ -66,45 +63,50 @@ function Agendamentos() {
     setDadosIniciaisAgendamento,
   ] = useState({})
 
-  // =========================
-  // CONFIRMAÇÃO
-  // =========================
-
   const [
     agendamentoConfirmado,
     setAgendamentoConfirmado,
   ] = useState(null)
 
-  // =========================
+  // =========================================
   // CARREGAR DADOS
-  // =========================
+  // =========================================
 
   useEffect(() => {
     async function carregarDados() {
-      const pacientesRecebidos =
-        await buscarPacientes()
+      try {
+        const [
+          pacientesRecebidos,
+          agendamentosRecebidos,
+        ] = await Promise.all([
+          buscarPacientes(),
+          buscarAgendamentos(),
+        ])
 
-      const agendamentosRecebidos =
-        await buscarAgendamentos()
-
-      setPacientes(pacientesRecebidos)
-      setAgendamentos(agendamentosRecebidos)
+        setPacientes(pacientesRecebidos)
+        setAgendamentos(agendamentosRecebidos)
+      } catch (erro) {
+        console.error(
+          'Erro ao carregar agenda:',
+          erro
+        )
+      }
     }
 
     carregarDados()
   }, [])
 
-  // =========================
-  // NAVEGAÇÃO
-  // =========================
+  // =========================================
+  // VOLTAR
+  // =========================================
 
   function voltarDashboard() {
     navigate('/dashboard')
   }
 
-  // =========================
+  // =========================================
   // CALENDÁRIO
-  // =========================
+  // =========================================
 
   function mesAnterior() {
     setDataCalendario((dataAtual) => {
@@ -126,9 +128,9 @@ function Agendamentos() {
     })
   }
 
-  // =========================
+  // =========================================
   // AGENDA DO DIA
-  // =========================
+  // =========================================
 
   function abrirDia(data) {
     setDiaSelecionado(data)
@@ -138,9 +140,9 @@ function Agendamentos() {
     setDiaSelecionado(null)
   }
 
-  // =========================
+  // =========================================
   // NOVO AGENDAMENTO
-  // =========================
+  // =========================================
 
   function abrirNovoAgendamento(
     dadosIniciais = {}
@@ -159,9 +161,9 @@ function Agendamentos() {
     setDadosIniciaisAgendamento({})
   }
 
-  // =========================
-  // SALVAR AGENDAMENTO
-  // =========================
+  // =========================================
+  // CRIAR AGENDAMENTO
+  // =========================================
 
   async function confirmarNovoAgendamento(
     novoAgendamento
@@ -175,9 +177,9 @@ function Agendamentos() {
       const agendamentosAtualizados =
         await buscarAgendamentos()
 
-      setAgendamentos([
-        ...agendamentosAtualizados,
-      ])
+      setAgendamentos(
+        agendamentosAtualizados
+      )
 
       setMostrarNovoAgendamento(false)
       setDadosIniciaisAgendamento({})
@@ -193,9 +195,37 @@ function Agendamentos() {
     }
   }
 
-  // =========================
+  // =========================================
+  // EXCLUIR AGENDAMENTO
+  // =========================================
+
+  async function removerAgendamento(
+    agendamentoId
+  ) {
+    try {
+      await excluirAgendamento(
+        agendamentoId
+      )
+
+      const agendamentosAtualizados =
+        await buscarAgendamentos()
+
+      setAgendamentos(
+        agendamentosAtualizados
+      )
+    } catch (erro) {
+      console.error(
+        'Erro ao excluir agendamento:',
+        erro
+      )
+
+      throw erro
+    }
+  }
+
+  // =========================================
   // CONFIRMAÇÃO
-  // =========================
+  // =========================================
 
   function fecharConfirmacao() {
     setAgendamentoConfirmado(null)
@@ -210,8 +240,13 @@ function Agendamentos() {
         )
       : null
 
+  // =========================================
+  // TELA
+  // =========================================
+
   return (
     <main className="pagina-agendamentos">
+
       <section className="agenda-container">
 
         {/* LISTA DE PACIENTES */}
@@ -232,9 +267,13 @@ function Agendamentos() {
         {/* CALENDÁRIO */}
 
         <section className="agenda-calendario">
+
           <div className="agenda-calendario-cabecalho">
+
             <div>
-              <span>CALENDÁRIO</span>
+              <span>
+                CALENDÁRIO
+              </span>
 
               <h2>
                 {pacienteSelecionado
@@ -252,16 +291,17 @@ function Agendamentos() {
             <button
               type="button"
               className="agenda-novo"
-              onClick={() =>
+              onClick={() => {
                 abrirNovoAgendamento({
                   pacienteId:
                     pacienteSelecionado?.id ||
                     null,
                 })
-              }
+              }}
             >
               + Novo agendamento
             </button>
+
           </div>
 
           <CalendarioMensal
@@ -274,10 +314,14 @@ function Agendamentos() {
             onProximoMes={proximoMes}
             onAbrirDia={abrirDia}
           />
+
         </section>
+
       </section>
 
-      {/* AGENDA DO DIA */}
+      {/* =====================================
+          MODAL DO DIA
+      ===================================== */}
 
       {diaSelecionado && (
         <ModalAgendaDia
@@ -291,10 +335,15 @@ function Agendamentos() {
           onCriarAgendamento={
             abrirNovoAgendamento
           }
+          onExcluirAgendamento={
+            removerAgendamento
+          }
         />
       )}
 
-      {/* NOVO AGENDAMENTO */}
+      {/* =====================================
+          MODAL NOVO AGENDAMENTO
+      ===================================== */}
 
       {mostrarNovoAgendamento && (
         <ModalNovoAgendamento
@@ -311,17 +360,24 @@ function Agendamentos() {
         />
       )}
 
-      {/* CONFIRMAÇÃO */}
+      {/* =====================================
+          CONFIRMAÇÃO
+      ===================================== */}
 
       {agendamentoConfirmado && (
         <ConfirmacaoAgendamento
           agendamento={
             agendamentoConfirmado
           }
-          paciente={pacienteConfirmado}
-          onVoltar={fecharConfirmacao}
+          paciente={
+            pacienteConfirmado
+          }
+          onVoltar={
+            fecharConfirmacao
+          }
         />
       )}
+
     </main>
   )
 }
