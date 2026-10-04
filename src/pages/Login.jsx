@@ -1,44 +1,157 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+
+import { supabase } from '../services/supabase'
+import { loginPsicologo } from '../services/authService'
 
 import logoSensus from '../assets/LOGO-2.png'
 
 function Login() {
   const navigate = useNavigate()
 
-  const [modalRecuperacao, setModalRecuperacao] = useState(false)
-  const [emailRecuperacao, setEmailRecuperacao] = useState('')
-  const [emailEnviado, setEmailEnviado] = useState(false)
+  // =======================================================
+  // LOGIN
+  // =======================================================
 
-  function fazerLogin(event) {
+  const [email, setEmail] = useState('')
+  const [senha, setSenha] = useState('')
+  const [carregando, setCarregando] = useState(false)
+  const [erroLogin, setErroLogin] = useState('')
+
+  // =======================================================
+  // RECUPERAÇÃO DE SENHA
+  // =======================================================
+
+  const [modalRecuperacao, setModalRecuperacao] =
+    useState(false)
+
+  const [emailRecuperacao, setEmailRecuperacao] =
+    useState('')
+
+  const [emailEnviado, setEmailEnviado] =
+    useState(false)
+
+  const [enviandoRecuperacao, setEnviandoRecuperacao] =
+    useState(false)
+
+  // =======================================================
+  // LOGIN
+  // =======================================================
+
+  async function fazerLogin(event) {
     event.preventDefault()
 
-    // Login temporário.
-    // Depois será substituído pela autenticação real.
-    navigate('/dashboard')
+    if (!email.trim() || !senha) {
+      setErroLogin(
+        'Informe o e-mail e a senha.'
+      )
+      return
+    }
+
+    try {
+      setCarregando(true)
+      setErroLogin('')
+
+      await loginPsicologo(
+        email.trim(),
+        senha
+      )
+
+      navigate('/dashboard', {
+        replace: true,
+      })
+    } catch (error) {
+      console.error(
+        'Erro no login:',
+        error
+      )
+
+      setErroLogin(
+        error.message ||
+          'Não foi possível entrar.'
+      )
+    } finally {
+      setCarregando(false)
+    }
   }
+
+  // =======================================================
+  // ABRIR / FECHAR RECUPERAÇÃO
+  // =======================================================
 
   function abrirRecuperacao() {
     setModalRecuperacao(true)
     setEmailEnviado(false)
+    setEmailRecuperacao('')
   }
 
   function fecharRecuperacao() {
     setModalRecuperacao(false)
     setEmailRecuperacao('')
     setEmailEnviado(false)
+    setEnviandoRecuperacao(false)
   }
 
-  function recuperarSenha(event) {
+  // =======================================================
+  // RECUPERAR SENHA
+  // =======================================================
+
+  async function recuperarSenha(event) {
     event.preventDefault()
 
-    if (!emailRecuperacao.trim()) {
+    const emailInformado =
+      emailRecuperacao.trim()
+
+    if (!emailInformado) {
       return
     }
 
-    // Simulação temporária do envio do e-mail.
-    setEmailEnviado(true)
+    try {
+      setEnviandoRecuperacao(true)
+
+      const { error } =
+        await supabase.auth.resetPasswordForEmail(
+          emailInformado,
+          {
+            redirectTo:
+              `${window.location.origin}/redefinir-senha`,
+          }
+        )
+
+      if (error) {
+        throw error
+      }
+
+      /*
+        Mostramos uma resposta genérica.
+
+        Isso evita informar publicamente
+        se determinado e-mail existe
+        ou não no sistema.
+      */
+
+      setEmailEnviado(true)
+    } catch (error) {
+      console.error(
+        'Erro ao solicitar recuperação:',
+        error
+      )
+
+      /*
+        Mantemos a mesma resposta visual
+        mesmo se o Supabase não concluir
+        o envio.
+      */
+
+      setEmailEnviado(true)
+    } finally {
+      setEnviandoRecuperacao(false)
+    }
   }
+
+  // =======================================================
+  // TELA
+  // =======================================================
 
   return (
     <main className="pagina-login">
@@ -58,13 +171,19 @@ function Login() {
           </span>
         </div>
 
-        <h1>Bem-vindo ao SENSUS</h1>
+        <h1>
+          Bem-vindo ao SENSUS
+        </h1>
 
         <p className="subtitulo">
-          Entre na sua conta para continuar
+          Acesso exclusivo para
+          profissionais autorizados
         </p>
 
+        {/* LOGIN */}
+
         <form onSubmit={fazerLogin}>
+
           <div className="campo">
             <label htmlFor="email">
               E-mail
@@ -75,7 +194,16 @@ function Login() {
               name="email"
               type="email"
               placeholder="Digite seu e-mail"
+              value={email}
+              onChange={(event) => {
+                setEmail(
+                  event.target.value
+                )
+
+                setErroLogin('')
+              }}
               autoComplete="email"
+              required
             />
           </div>
 
@@ -89,9 +217,27 @@ function Login() {
               name="senha"
               type="password"
               placeholder="Digite sua senha"
+              value={senha}
+              onChange={(event) => {
+                setSenha(
+                  event.target.value
+                )
+
+                setErroLogin('')
+              }}
               autoComplete="current-password"
+              required
             />
           </div>
+
+          {erroLogin && (
+            <div
+              className="login-erro"
+              role="alert"
+            >
+              {erroLogin}
+            </div>
+          )}
 
           <button
             type="button"
@@ -104,22 +250,19 @@ function Login() {
           <button
             className="botao-entrar"
             type="submit"
+            disabled={carregando}
           >
-            Entrar
+            {carregando
+              ? 'Entrando...'
+              : 'Entrar'}
           </button>
 
-          <div className="divisor">
-            <span>ou</span>
-          </div>
-
-          <Link
-            className="botao-cadastro link-botao"
-            to="/cadastro"
-          >
-            Criar uma conta
-          </Link>
         </form>
       </section>
+
+      {/* ===================================================
+          MODAL DE RECUPERAÇÃO
+      =================================================== */}
 
       {modalRecuperacao && (
         <div
@@ -152,11 +295,15 @@ function Login() {
                 </h2>
 
                 <p>
-                  Informe o e-mail associado à sua conta.
-                  Enviaremos as instruções para redefinir sua senha.
+                  Informe o e-mail
+                  associado à sua conta.
+                  Enviaremos as instruções
+                  para redefinir sua senha.
                 </p>
 
-                <form onSubmit={recuperarSenha}>
+                <form
+                  onSubmit={recuperarSenha}
+                >
                   <div className="campo">
                     <label htmlFor="email-recuperacao">
                       E-mail
@@ -167,7 +314,9 @@ function Login() {
                       name="email-recuperacao"
                       type="email"
                       placeholder="Digite seu e-mail"
-                      value={emailRecuperacao}
+                      value={
+                        emailRecuperacao
+                      }
                       onChange={(event) =>
                         setEmailRecuperacao(
                           event.target.value
@@ -182,19 +331,25 @@ function Login() {
                   <button
                     type="submit"
                     className="botao-entrar"
+                    disabled={
+                      enviandoRecuperacao
+                    }
                   >
-                    Enviar instruções
+                    {enviandoRecuperacao
+                      ? 'Enviando...'
+                      : 'Enviar instruções'}
                   </button>
                 </form>
               </>
             ) : (
               <div className="recuperacao-sucesso">
+
                 <div className="icone-sucesso">
                   ✓
                 </div>
 
                 <span className="modal-etiqueta">
-                  E-MAIL ENVIADO
+                  SOLICITAÇÃO ENVIADA
                 </span>
 
                 <h2>
@@ -202,21 +357,23 @@ function Login() {
                 </h2>
 
                 <p>
-                  As instruções de recuperação foram enviadas
-                  para:
+                  Se houver uma conta
+                  autorizada associada a
+                  esse endereço, você
+                  receberá as instruções
+                  para redefinir sua senha.
                 </p>
-
-                <strong>
-                  {emailRecuperacao}
-                </strong>
 
                 <button
                   type="button"
                   className="botao-entrar"
-                  onClick={fecharRecuperacao}
+                  onClick={
+                    fecharRecuperacao
+                  }
                 >
                   Voltar para o login
                 </button>
+
               </div>
             )}
           </section>

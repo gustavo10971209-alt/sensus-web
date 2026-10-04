@@ -9,6 +9,10 @@ import {
 } from 'react-router-dom'
 
 import {
+  buscarPsicologoLogado,
+} from '../services/authService'
+
+import {
   buscarPacientesSupabase,
 } from '../services/pacienteService'
 
@@ -36,25 +40,40 @@ function Dashboard() {
   // ESTADOS
   // =========================================
 
-  const [modalAberto, setModalAberto] =
-    useState(false)
+  const [
+    modalAberto,
+    setModalAberto,
+  ] = useState(false)
 
-  const [pesquisa, setPesquisa] =
-    useState('')
+  const [
+    pesquisa,
+    setPesquisa,
+  ] = useState('')
 
   const [
     pacienteSelecionado,
     setPacienteSelecionado,
   ] = useState(null)
 
-  const [pacientes, setPacientes] =
-    useState([])
+  const [
+    pacientes,
+    setPacientes,
+  ] = useState([])
 
-  const [agendamentos, setAgendamentos] =
-    useState([])
+  const [
+    agendamentos,
+    setAgendamentos,
+  ] = useState([])
 
-  const [emocoes, setEmocoes] =
-    useState([])
+  const [
+    emocoes,
+    setEmocoes,
+  ] = useState([])
+
+  const [
+    psicologo,
+    setPsicologo,
+  ] = useState(null)
 
   const [
     carregandoPacientes,
@@ -75,6 +94,28 @@ function Dashboard() {
     erroEmocoes,
     setErroEmocoes,
   ] = useState('')
+
+  // =========================================
+  // CARREGAR PSICÓLOGO
+  // =========================================
+
+  useEffect(() => {
+    async function carregarPsicologo() {
+      try {
+        const dados =
+          await buscarPsicologoLogado()
+
+        setPsicologo(dados)
+      } catch (error) {
+        console.error(
+          'Erro ao carregar psicólogo:',
+          error
+        )
+      }
+    }
+
+    carregarPsicologo()
+  }, [])
 
   // =========================================
   // CARREGAR PACIENTES E AGENDAMENTOS
@@ -191,7 +232,10 @@ function Dashboard() {
     navigate('/agendamentos')
   }
 
-  // Enviamos o ID do paciente na URL.
+  function abrirPerfil() {
+    navigate('/perfil')
+  }
+
   function abrirDadosPaciente() {
     if (!pacienteSelecionado) {
       return
@@ -202,21 +246,19 @@ function Dashboard() {
     )
   }
 
-  /*
-    A tela de relatórios ainda será criada.
-
-    Por enquanto não vamos navegar para
-    uma rota inexistente.
-  */
   function abrirRelatoriosPaciente() {
-  if (!pacienteSelecionado) {
-    return
+    if (!pacienteSelecionado) {
+      return
+    }
+
+    navigate(
+      `/relatorios?paciente=${pacienteSelecionado.id}`
+    )
   }
 
-  navigate(
-    `/relatorios?paciente=${pacienteSelecionado.id}`
-  )
-}
+  // =========================================
+  // TELA
+  // =========================================
 
   return (
     <main className="pagina-dashboard">
@@ -257,12 +299,14 @@ function Dashboard() {
         <div className="dashboard-usuario">
 
           <span>
-            Psicólogo
+            {psicologo?.Name ||
+              'Psicólogo'}
           </span>
 
           <button
             type="button"
             className="botao-perfil"
+            onClick={abrirPerfil}
           >
             Perfil
           </button>

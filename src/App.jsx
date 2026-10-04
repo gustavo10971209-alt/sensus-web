@@ -8,16 +8,24 @@ import {
 import './App.css'
 
 import Login from './pages/Login'
-import Cadastro from './pages/Cadastro'
 import Dashboard from './pages/Dashboard'
 import Agendamentos from './pages/Agendamentos'
 import Pacientes from './pages/Pacientes'
 import Relatorios from './pages/Relatorios'
+import RedefinirSenha from './pages/RedefinirSenha'
+import Perfil from './pages/Perfil'
+
+import RotaProtegida from './components/RotaProtegida'
 
 function App() {
   return (
     <BrowserRouter>
+
       <Routes>
+
+        {/* ===============================================
+            ROTAS PÚBLICAS
+        =============================================== */}
 
         <Route
           path="/login"
@@ -25,38 +33,73 @@ function App() {
         />
 
         <Route
-          path="/cadastro"
-          element={<Cadastro />}
+          path="/redefinir-senha"
+          element={
+            <RedefinirSenha />
+          }
         />
+
+        {/* ===============================================
+            ROTAS PROTEGIDAS
+        =============================================== */}
 
         <Route
           path="/dashboard"
-          element={<Dashboard />}
+          element={
+            <RotaProtegida>
+              <Dashboard />
+            </RotaProtegida>
+          }
         />
-
-        {/* Página geral de pacientes */}
 
         <Route
           path="/pacientes"
-          element={<Pacientes />}
+          element={
+            <RotaProtegida>
+              <Pacientes />
+            </RotaProtegida>
+          }
         />
-
-        {/* Paciente específico vindo do Dashboard */}
 
         <Route
           path="/pacientes/:pacienteId"
-          element={<Pacientes />}
+          element={
+            <RotaProtegida>
+              <Pacientes />
+            </RotaProtegida>
+          }
         />
 
         <Route
           path="/agendamentos"
-          element={<Agendamentos />}
+          element={
+            <RotaProtegida>
+              <Agendamentos />
+            </RotaProtegida>
+          }
         />
 
         <Route
-         path="/relatorios"
-         element={<Relatorios />}
+          path="/relatorios"
+          element={
+            <RotaProtegida>
+              <Relatorios />
+            </RotaProtegida>
+          }
         />
+
+        <Route
+          path="/perfil"
+          element={
+            <RotaProtegida>
+              <Perfil />
+            </RotaProtegida>
+          }
+        />
+
+        {/* ===============================================
+            REDIRECIONAMENTOS
+        =============================================== */}
 
         <Route
           path="/"
@@ -68,7 +111,18 @@ function App() {
           }
         />
 
+        <Route
+          path="*"
+          element={
+            <Navigate
+              to="/login"
+              replace
+            />
+          }
+        />
+
       </Routes>
+
     </BrowserRouter>
   )
 }
