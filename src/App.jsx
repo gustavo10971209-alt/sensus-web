@@ -12,6 +12,7 @@ import Cadastro from './pages/Cadastro'
 import Dashboard from './pages/Dashboard'
 import Agendamentos from './pages/Agendamentos'
 import Pacientes from './pages/Pacientes'
+import Relatorios from './pages/Relatorios'
 
 function App() {
   return (
@@ -50,6 +51,11 @@ function App() {
         <Route
           path="/agendamentos"
           element={<Agendamentos />}
+        />
+
+        <Route
+         path="/relatorios"
+         element={<Relatorios />}
         />
 
         <Route

@@ -7,6 +7,7 @@ function ModalAgendaDia({
   pacienteSelecionado,
   onFechar,
   onCriarAgendamento,
+  onEditarAgendamento,
   onExcluirAgendamento,
 }) {
   const [filtroPaciente, setFiltroPaciente] = useState(
@@ -89,6 +90,10 @@ function ModalAgendaDia({
     })
   }
 
+  function editarAgendamento(agendamento) {
+    onEditarAgendamento(agendamento)
+  }
+
   function abrirConfirmacaoExclusao(agendamento) {
     setAgendamentoParaExcluir(agendamento)
   }
@@ -160,6 +165,7 @@ function ModalAgendaDia({
 
             <input
               id="pesquisaPacienteDia"
+              name="pesquisaPacienteDia"
               type="text"
               placeholder="Pesquisar paciente..."
               value={pesquisa}
@@ -274,6 +280,18 @@ function ModalAgendaDia({
                 </div>
 
                 <div className="agenda-dia-acoes">
+                  <button
+                    type="button"
+                    className="agenda-editar"
+                    onClick={() =>
+                      editarAgendamento(
+                        agendamento
+                      )
+                    }
+                  >
+                    Editar
+                  </button>
+
                   <button
                     type="button"
                     className="agenda-excluir"

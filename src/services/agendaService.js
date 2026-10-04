@@ -16,18 +16,6 @@ export async function buscarPacientes() {
 // ADAPTAR AGENDAMENTO
 // Banco → Frontend
 // =========================================
-//
-// O banco guarda data e horário juntos:
-//
-// Appointment_Date_Time
-//
-// Mas nossos componentes trabalham com:
-//
-// data: "2026-09-27"
-// horario: "14:30"
-//
-// Esta função faz essa tradução.
-// =========================================
 
 function adaptarAgendamento(
   agendamento
@@ -171,14 +159,6 @@ export async function buscarAgendamentosPorDataEPaciente(
 export async function criarAgendamento(
   novoAgendamento
 ) {
-  // O formulário entrega:
-  //
-  // data: "2026-09-27"
-  // horario: "14:30"
-  //
-  // Aqui juntamos os dois antes
-  // de enviar ao Supabase.
-
   const dataHora = new Date(
     `${novoAgendamento.data}T${novoAgendamento.horario}:00`
   )
@@ -222,6 +202,63 @@ export async function criarAgendamento(
 
   return adaptarAgendamento(data)
 }
+
+// =========================================
+// ATUALIZAR AGENDAMENTO
+// =========================================
+
+export async function atualizarAgendamento(
+  agendamentoId,
+  agendamentoAtualizado
+) {
+  const dataHora = new Date(
+    `${agendamentoAtualizado.data}T${agendamentoAtualizado.horario}:00`
+  )
+
+  const {
+    data,
+    error,
+  } = await supabase
+    .from('Appointments')
+    .update({
+      Patient_ID:
+        agendamentoAtualizado.pacienteId,
+
+      Appointment_Date_Time:
+        dataHora.toISOString(),
+
+      Time_Session:
+        agendamentoAtualizado.duracao,
+
+      Observation:
+        agendamentoAtualizado.observacao ||
+        null,
+    })
+    .eq(
+      'Appointment_ID',
+      agendamentoId
+    )
+    .select(`
+      Appointment_ID,
+      Patient_ID,
+      Appointment_Date_Time,
+      Time_Session,
+      Observation
+    `)
+    .single()
+
+  if (error) {
+    console.error(
+      'Erro ao atualizar agendamento:',
+      error
+    )
+
+    throw error
+  }
+
+  return adaptarAgendamento(data)
+}
+
 // =========================================
 // EXCLUIR AGENDAMENTO
 // =========================================

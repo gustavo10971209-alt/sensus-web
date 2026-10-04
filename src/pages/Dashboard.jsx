@@ -209,15 +209,14 @@ function Dashboard() {
     uma rota inexistente.
   */
   function abrirRelatoriosPaciente() {
-    if (!pacienteSelecionado) {
-      return
-    }
-
-    console.log(
-      'Relatório futuro do paciente:',
-      pacienteSelecionado.id
-    )
+  if (!pacienteSelecionado) {
+    return
   }
+
+  navigate(
+    `/relatorios?paciente=${pacienteSelecionado.id}`
+  )
+}
 
   return (
     <main className="pagina-dashboard">
@@ -249,9 +248,9 @@ function Dashboard() {
             Agenda
           </Link>
 
-          <a href="#">
+          <Link to="/relatorios">
             Relatórios
-          </a>
+          </Link>
 
         </nav>
 

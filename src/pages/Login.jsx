@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
+import logoSensus from '../assets/LOGO-2.png'
+
 function Login() {
   const navigate = useNavigate()
 
@@ -41,6 +43,21 @@ function Login() {
   return (
     <main className="pagina-login">
       <section className="card-login">
+
+        {/* IDENTIDADE SENSUS */}
+
+        <div className="login-identidade">
+          <img
+            src={logoSensus}
+            alt="Logo SENSUS"
+            className="login-logo"
+          />
+
+          <span className="login-nome">
+            SENSUS
+          </span>
+        </div>
+
         <h1>Bem-vindo ao SENSUS</h1>
 
         <p className="subtitulo">
@@ -55,8 +72,10 @@ function Login() {
 
             <input
               id="email"
+              name="email"
               type="email"
               placeholder="Digite seu e-mail"
+              autoComplete="email"
             />
           </div>
 
@@ -67,8 +86,10 @@ function Login() {
 
             <input
               id="senha"
+              name="senha"
               type="password"
               placeholder="Digite sua senha"
+              autoComplete="current-password"
             />
           </div>
 
@@ -107,7 +128,9 @@ function Login() {
         >
           <section
             className="modal-recuperacao"
-            onClick={(event) => event.stopPropagation()}
+            onClick={(event) =>
+              event.stopPropagation()
+            }
           >
             <button
               type="button"
@@ -124,7 +147,9 @@ function Login() {
                   RECUPERAÇÃO DE SENHA
                 </span>
 
-                <h2>Esqueceu sua senha?</h2>
+                <h2>
+                  Esqueceu sua senha?
+                </h2>
 
                 <p>
                   Informe o e-mail associado à sua conta.
@@ -139,14 +164,18 @@ function Login() {
 
                     <input
                       id="email-recuperacao"
+                      name="email-recuperacao"
                       type="email"
                       placeholder="Digite seu e-mail"
                       value={emailRecuperacao}
                       onChange={(event) =>
-                        setEmailRecuperacao(event.target.value)
+                        setEmailRecuperacao(
+                          event.target.value
+                        )
                       }
                       required
                       autoFocus
+                      autoComplete="email"
                     />
                   </div>
 
@@ -168,7 +197,9 @@ function Login() {
                   E-MAIL ENVIADO
                 </span>
 
-                <h2>Verifique seu e-mail</h2>
+                <h2>
+                  Verifique seu e-mail
+                </h2>
 
                 <p>
                   As instruções de recuperação foram enviadas

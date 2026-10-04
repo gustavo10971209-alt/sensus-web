@@ -5,6 +5,7 @@ import {
   buscarPacientes,
   buscarAgendamentos,
   criarAgendamento,
+  atualizarAgendamento,
   excluirAgendamento,
 } from '../services/agendaService'
 
@@ -29,8 +30,11 @@ function Agendamentos() {
   // =========================================
 
   const [pesquisa, setPesquisa] = useState('')
-  const [pacienteSelecionado, setPacienteSelecionado] =
-    useState(null)
+
+  const [
+    pacienteSelecionado,
+    setPacienteSelecionado,
+  ] = useState(null)
 
   // =========================================
   // CALENDÁRIO
@@ -38,13 +42,14 @@ function Agendamentos() {
 
   const hoje = new Date()
 
-  const [dataCalendario, setDataCalendario] = useState(
-    new Date(
-      hoje.getFullYear(),
-      hoje.getMonth(),
-      1
+  const [dataCalendario, setDataCalendario] =
+    useState(
+      new Date(
+        hoje.getFullYear(),
+        hoje.getMonth(),
+        1
+      )
     )
-  )
 
   // =========================================
   // MODAIS
@@ -62,6 +67,11 @@ function Agendamentos() {
     dadosIniciaisAgendamento,
     setDadosIniciaisAgendamento,
   ] = useState({})
+
+  const [
+    agendamentoEmEdicao,
+    setAgendamentoEmEdicao,
+  ] = useState(null)
 
   const [
     agendamentoConfirmado,
@@ -147,6 +157,8 @@ function Agendamentos() {
   function abrirNovoAgendamento(
     dadosIniciais = {}
   ) {
+    setAgendamentoEmEdicao(null)
+
     setDadosIniciaisAgendamento(
       dadosIniciais
     )
@@ -156,9 +168,43 @@ function Agendamentos() {
     setMostrarNovoAgendamento(true)
   }
 
-  function fecharNovoAgendamento() {
+  function fecharFormularioAgendamento() {
     setMostrarNovoAgendamento(false)
     setDadosIniciaisAgendamento({})
+    setAgendamentoEmEdicao(null)
+  }
+
+  // =========================================
+  // EDITAR AGENDAMENTO
+  // =========================================
+
+  function abrirEdicaoAgendamento(
+    agendamento
+  ) {
+    setAgendamentoEmEdicao(
+      agendamento
+    )
+
+    setDadosIniciaisAgendamento({
+      pacienteId:
+        agendamento.pacienteId,
+
+      data:
+        agendamento.data,
+
+      horario:
+        agendamento.horario,
+
+      duracao:
+        agendamento.duracao,
+
+      observacao:
+        agendamento.observacao || '',
+    })
+
+    setDiaSelecionado(null)
+
+    setMostrarNovoAgendamento(true)
   }
 
   // =========================================
@@ -183,6 +229,7 @@ function Agendamentos() {
 
       setMostrarNovoAgendamento(false)
       setDadosIniciaisAgendamento({})
+      setAgendamentoEmEdicao(null)
 
       setAgendamentoConfirmado(
         agendamentoCriado
@@ -222,6 +269,46 @@ function Agendamentos() {
       throw erro
     }
   }
+
+  // =========================================
+// SALVAR AGENDAMENTO
+// Criar ou editar
+// =========================================
+
+async function salvarAgendamento(
+  dadosAgendamento
+) {
+  if (agendamentoEmEdicao) {
+    try {
+      await atualizarAgendamento(
+        agendamentoEmEdicao.id,
+        dadosAgendamento
+      )
+
+      const agendamentosAtualizados =
+        await buscarAgendamentos()
+
+      setAgendamentos(
+        agendamentosAtualizados
+      )
+
+      setMostrarNovoAgendamento(false)
+      setDadosIniciaisAgendamento({})
+      setAgendamentoEmEdicao(null)
+    } catch (erro) {
+      console.error(
+        'Erro ao atualizar agendamento:',
+        erro
+      )
+    }
+
+    return
+  }
+
+  await confirmarNovoAgendamento(
+    dadosAgendamento
+  )
+}
 
   // =========================================
   // CONFIRMAÇÃO
@@ -335,6 +422,9 @@ function Agendamentos() {
           onCriarAgendamento={
             abrirNovoAgendamento
           }
+          onEditarAgendamento={
+            abrirEdicaoAgendamento
+          }
           onExcluirAgendamento={
             removerAgendamento
           }
@@ -342,7 +432,7 @@ function Agendamentos() {
       )}
 
       {/* =====================================
-          MODAL NOVO AGENDAMENTO
+          FORMULÁRIO DE AGENDAMENTO
       ===================================== */}
 
       {mostrarNovoAgendamento && (
@@ -351,11 +441,16 @@ function Agendamentos() {
           dadosIniciais={
             dadosIniciaisAgendamento
           }
+          modo={
+            agendamentoEmEdicao
+              ? 'editar'
+              : 'criar'
+          }
           onCancelar={
-            fecharNovoAgendamento
+            fecharFormularioAgendamento
           }
           onConfirmar={
-            confirmarNovoAgendamento
+            salvarAgendamento
           }
         />
       )}

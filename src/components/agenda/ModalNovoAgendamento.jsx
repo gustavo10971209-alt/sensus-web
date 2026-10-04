@@ -3,9 +3,12 @@ import { useEffect, useState } from 'react'
 function ModalNovoAgendamento({
   pacientes,
   dadosIniciais,
+  modo = 'criar',
   onCancelar,
   onConfirmar,
 }) {
+  const editando = modo === 'editar'
+
   const [pacienteId, setPacienteId] = useState(
     dadosIniciais?.pacienteId || ''
   )
@@ -14,9 +17,17 @@ function ModalNovoAgendamento({
     dadosIniciais?.data || ''
   )
 
-  const [horario, setHorario] = useState('')
-  const [duracao, setDuracao] = useState('50')
-  const [observacao, setObservacao] = useState('')
+  const [horario, setHorario] = useState(
+    dadosIniciais?.horario || ''
+  )
+
+  const [duracao, setDuracao] = useState(
+    String(dadosIniciais?.duracao || '50')
+  )
+
+  const [observacao, setObservacao] = useState(
+    dadosIniciais?.observacao || ''
+  )
 
   const [pesquisaPaciente, setPesquisaPaciente] =
     useState('')
@@ -26,8 +37,10 @@ function ModalNovoAgendamento({
 
   const [erro, setErro] = useState('')
 
-  // Se o formulário já abrir com um paciente selecionado,
-  // mostramos o nome dele na pesquisa.
+  // =========================================
+  // CARREGAR PACIENTE INICIAL
+  // =========================================
+
   useEffect(() => {
     if (!dadosIniciais?.pacienteId) {
       return
@@ -39,19 +52,28 @@ function ModalNovoAgendamento({
     )
 
     if (pacienteInicial) {
-      setPesquisaPaciente(pacienteInicial.nome)
+      setPesquisaPaciente(
+        pacienteInicial.nome
+      )
     }
   }, [dadosIniciais, pacientes])
+
+  // =========================================
+  // PACIENTES
+  // =========================================
 
   const pacientesFiltrados = pacientes.filter(
     (paciente) =>
       paciente.nome
         .toLowerCase()
-        .includes(pesquisaPaciente.toLowerCase())
+        .includes(
+          pesquisaPaciente.toLowerCase()
+        )
   )
 
   const pacienteSelecionado = pacientes.find(
-    (paciente) => paciente.id === pacienteId
+    (paciente) =>
+      paciente.id === pacienteId
   )
 
   function selecionarPaciente(paciente) {
@@ -67,14 +89,21 @@ function ModalNovoAgendamento({
     setMostrarPacientes(true)
   }
 
-  function formatarDataCompleta(dataRecebida) {
+  // =========================================
+  // DATA
+  // =========================================
+
+  function formatarDataCompleta(
+    dataRecebida
+  ) {
     if (!dataRecebida) {
       return ''
     }
 
-    const [ano, mes, dia] = dataRecebida
-      .split('-')
-      .map(Number)
+    const [ano, mes, dia] =
+      dataRecebida
+        .split('-')
+        .map(Number)
 
     return new Date(
       ano,
@@ -88,25 +117,35 @@ function ModalNovoAgendamento({
     })
   }
 
+  // =========================================
+  // ENVIAR FORMULÁRIO
+  // =========================================
+
   function enviarFormulario(event) {
     event.preventDefault()
 
     if (!pacienteId) {
-      setErro('Selecione um paciente.')
+      setErro(
+        'Selecione um paciente.'
+      )
       return
     }
 
     if (!data) {
-      setErro('Selecione a data do agendamento.')
+      setErro(
+        'Selecione a data do agendamento.'
+      )
       return
     }
 
     if (!horario) {
-      setErro('Informe o horário do agendamento.')
+      setErro(
+        'Informe o horário do agendamento.'
+      )
       return
     }
 
-    const novoAgendamento = {
+    const dadosAgendamento = {
       pacienteId,
       data,
       horario,
@@ -114,8 +153,14 @@ function ModalNovoAgendamento({
       observacao: observacao.trim(),
     }
 
-    onConfirmar(novoAgendamento)
+    onConfirmar(
+      dadosAgendamento
+    )
   }
+
+  // =========================================
+  // TELA
+  // =========================================
 
   return (
     <div
@@ -128,6 +173,10 @@ function ModalNovoAgendamento({
           event.stopPropagation()
         }
       >
+        {/* =================================
+            CABEÇALHO
+        ================================= */}
+
         <div className="novo-agendamento-cabecalho">
           <button
             type="button"
@@ -139,10 +188,23 @@ function ModalNovoAgendamento({
           </button>
 
           <div>
-            <span>NOVO AGENDAMENTO</span>
-            <h2>Agendar atendimento</h2>
+            <span>
+              {editando
+                ? 'EDITAR AGENDAMENTO'
+                : 'NOVO AGENDAMENTO'}
+            </span>
+
+            <h2>
+              {editando
+                ? 'Editar atendimento'
+                : 'Agendar atendimento'}
+            </h2>
           </div>
         </div>
+
+        {/* =================================
+            FORMULÁRIO
+        ================================= */}
 
         <form
           className="novo-agendamento-formulario"
@@ -160,6 +222,7 @@ function ModalNovoAgendamento({
 
               <input
                 id="novoPaciente"
+                name="novoPaciente"
                 type="text"
                 placeholder="Pesquisar paciente..."
                 value={pesquisaPaciente}
@@ -204,7 +267,9 @@ function ModalNovoAgendamento({
                         }
                       >
                         <div className="agenda-filtro-avatar">
-                          {paciente.nome.charAt(0)}
+                          {paciente.nome.charAt(
+                            0
+                          )}
                         </div>
 
                         <div>
@@ -231,8 +296,11 @@ function ModalNovoAgendamento({
               !mostrarPacientes && (
                 <span className="novo-campo-confirmacao">
                   Paciente selecionado:{' '}
+
                   <strong>
-                    {pacienteSelecionado.nome}
+                    {
+                      pacienteSelecionado.nome
+                    }
                   </strong>
                 </span>
               )}
@@ -247,17 +315,23 @@ function ModalNovoAgendamento({
 
             <input
               id="novoData"
+              name="novoData"
               type="date"
               value={data}
               onChange={(event) => {
-                setData(event.target.value)
+                setData(
+                  event.target.value
+                )
+
                 setErro('')
               }}
             />
 
             {data && (
               <span className="novo-data-completa">
-                {formatarDataCompleta(data)}
+                {formatarDataCompleta(
+                  data
+                )}
               </span>
             )}
           </div>
@@ -265,6 +339,7 @@ function ModalNovoAgendamento({
           {/* HORÁRIO + DURAÇÃO */}
 
           <div className="novo-agendamento-linha">
+
             <div className="novo-agendamento-campo">
               <label htmlFor="novoHorario">
                 Horário
@@ -272,10 +347,14 @@ function ModalNovoAgendamento({
 
               <input
                 id="novoHorario"
+                name="novoHorario"
                 type="time"
                 value={horario}
                 onChange={(event) => {
-                  setHorario(event.target.value)
+                  setHorario(
+                    event.target.value
+                  )
+
                   setErro('')
                 }}
               />
@@ -288,9 +367,12 @@ function ModalNovoAgendamento({
 
               <select
                 id="novoDuracao"
+                name="novoDuracao"
                 value={duracao}
                 onChange={(event) =>
-                  setDuracao(event.target.value)
+                  setDuracao(
+                    event.target.value
+                  )
                 }
               >
                 <option value="30">
@@ -314,6 +396,7 @@ function ModalNovoAgendamento({
                 </option>
               </select>
             </div>
+
           </div>
 
           {/* OBSERVAÇÃO */}
@@ -326,12 +409,15 @@ function ModalNovoAgendamento({
 
             <textarea
               id="novoObservacao"
+              name="novoObservacao"
               rows="3"
               maxLength="250"
               placeholder="Adicione uma observação sobre o atendimento..."
               value={observacao}
               onChange={(event) =>
-                setObservacao(event.target.value)
+                setObservacao(
+                  event.target.value
+                )
               }
             />
 
@@ -363,9 +449,12 @@ function ModalNovoAgendamento({
               type="submit"
               className="agenda-criar"
             >
-              Confirmar agendamento
+              {editando
+                ? 'Salvar alterações'
+                : 'Confirmar agendamento'}
             </button>
           </div>
+
         </form>
       </section>
     </div>
