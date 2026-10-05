@@ -1,743 +1,1498 @@
 import {
-  useEffect,
-  useState,
+
+  useEffect,
+
+  useState,
+
 } from 'react'
+
 import html2canvas from 'html2canvas'
+
 import jsPDF from 'jspdf'
+
 import {
-  Link,
+
+  Link,
+
 } from 'react-router-dom'
 
+
+
 import {
-  buscarPacientesSupabase,
+
+  buscarPacientesSupabase,
+
 } from '../services/pacienteService'
 
+
+
 import MenuRelatorios
-  from '../components/relatorios/MenuRelatorios'
+
+  from '../components/relatorios/MenuRelatorios'
+
+
 
 import DetalhesRelatorio
-  from '../components/relatorios/DetalhesRelatorio'
+
+  from '../components/relatorios/DetalhesRelatorio'
+
+
 
 import SeletorPacienteRelatorio
-  from '../components/relatorios/SeletorPacienteRelatorio'
+
+  from '../components/relatorios/SeletorPacienteRelatorio'
+
+
 
 import FiltrosRelatorio
-  from '../components/relatorios/FiltrosRelatorio'
+
+  from '../components/relatorios/FiltrosRelatorio'
+
+
 
 import VisualizacaoRelatorio
-  from '../components/relatorios/VisualizacaoRelatorio'
+
+  from '../components/relatorios/VisualizacaoRelatorio'
+
+
+
+
+import BlocoNotas
+  from '../components/notas/BlocoNotas'
 
 // =========================================
+
 // FUNÇÕES DE DATA
+
 // =========================================
+
+
 
 function formatarDataInput(data) {
-  const ano =
-    data.getFullYear()
 
-  const mes =
-    String(
-      data.getMonth() + 1
-    ).padStart(2, '0')
+  const ano =
 
-  const dia =
-    String(
-      data.getDate()
-    ).padStart(2, '0')
+    data.getFullYear()
 
-  return `${ano}-${mes}-${dia}`
+
+
+  const mes =
+
+    String(
+
+      data.getMonth() + 1
+
+    ).padStart(2, '0')
+
+
+
+  const dia =
+
+    String(
+
+      data.getDate()
+
+    ).padStart(2, '0')
+
+
+
+  return `${ano}-${mes}-${dia}`
+
 }
+
+
 
 function adicionarDias(
-  dataRecebida,
-  quantidade
+
+  dataRecebida,
+
+  quantidade
+
 ) {
-  const [
-    ano,
-    mes,
-    dia,
-  ] = dataRecebida
-    .split('-')
-    .map(Number)
 
-  const data =
-    new Date(
-      ano,
-      mes - 1,
-      dia
-    )
+  const [
 
-  data.setDate(
-    data.getDate() +
-      quantidade
-  )
+    ano,
 
-  return formatarDataInput(
-    data
-  )
+    mes,
+
+    dia,
+
+  ] = dataRecebida
+
+    .split('-')
+
+    .map(Number)
+
+
+
+  const data =
+
+    new Date(
+
+      ano,
+
+      mes - 1,
+
+      dia
+
+    )
+
+
+
+  data.setDate(
+
+    data.getDate() +
+
+      quantidade
+
+  )
+
+
+
+  return formatarDataInput(
+
+    data
+
+  )
+
 }
+
+
 
 function obterInicioSemana() {
-  const hoje =
-    new Date()
 
-  const diaSemana =
-    hoje.getDay()
+  const hoje =
 
-  const diferenca =
-    diaSemana === 0
-      ? -6
-      : 1 - diaSemana
+    new Date()
 
-  const segunda =
-    new Date(
-      hoje.getFullYear(),
-      hoje.getMonth(),
-      hoje.getDate()
-    )
 
-  segunda.setDate(
-    segunda.getDate() +
-      diferenca
-  )
 
-  return formatarDataInput(
-    segunda
-  )
+  const diaSemana =
+
+    hoje.getDay()
+
+
+
+  const diferenca =
+
+    diaSemana === 0
+
+      ? -6
+
+      : 1 - diaSemana
+
+
+
+  const segunda =
+
+    new Date(
+
+      hoje.getFullYear(),
+
+      hoje.getMonth(),
+
+      hoje.getDate()
+
+    )
+
+
+
+  segunda.setDate(
+
+    segunda.getDate() +
+
+      diferenca
+
+  )
+
+
+
+  return formatarDataInput(
+
+    segunda
+
+  )
+
 }
 
+
+
 // =========================================
+
 // PÁGINA
+
 // =========================================
+
+
 
 function Relatorios() {
-  const [
-    relatorioSelecionado,
-    setRelatorioSelecionado,
-  ] = useState(null)
 
-  const [
-    pacientes,
-    setPacientes,
-  ] = useState([])
+  const [
 
-  const [
-    pacienteSelecionado,
-    setPacienteSelecionado,
-  ] = useState(null)
+    relatorioSelecionado,
 
-  const [
-    carregandoPacientes,
-    setCarregandoPacientes,
-  ] = useState(true)
+    setRelatorioSelecionado,
 
-  const [
-    erroPacientes,
-    setErroPacientes,
-  ] = useState('')
+  ] = useState(null)
 
-  const inicioSemana =
-    obterInicioSemana()
 
-  const [
-    dataInicio,
-    setDataInicio,
-  ] = useState(
-    inicioSemana
-  )
 
-  const [
-    dataFim,
-    setDataFim,
-  ] = useState(
-    adicionarDias(
-      inicioSemana,
-      6
-    )
-  )
+  const [
 
-  // =========================================
-  // PACIENTES
-  // =========================================
+    pacientes,
 
-  useEffect(() => {
-    async function carregarPacientes() {
-      try {
-        setCarregandoPacientes(
-          true
-        )
+    setPacientes,
 
-        setErroPacientes('')
+  ] = useState([])
 
-        const dados =
-          await buscarPacientesSupabase()
 
-        setPacientes(
-          dados
-        )
-      } catch (error) {
-        console.error(
-          'Erro ao carregar pacientes:',
-          error
-        )
 
-        setErroPacientes(
-          'Não foi possível carregar os pacientes.'
-        )
-      } finally {
-        setCarregandoPacientes(
-          false
-        )
-      }
-    }
+  const [
 
-    carregarPacientes()
-  }, [])
+    pacienteSelecionado,
 
-  // =========================================
-  // RELATÓRIO
-  // =========================================
+    setPacienteSelecionado,
 
-  function selecionarRelatorio(
-    relatorio
-  ) {
-    setRelatorioSelecionado(
-      relatorio
-    )
+  ] = useState(null)
 
-    setPacienteSelecionado(
-      null
-    )
 
-    const inicio =
-      obterInicioSemana()
 
-    setDataInicio(
-      inicio
-    )
+  const [
 
-    setDataFim(
-      adicionarDias(
-        inicio,
-        6
-      )
-    )
-  }
+    carregandoPacientes,
 
-  // =========================================
-  // DATAS
-  // =========================================
+    setCarregandoPacientes,
 
-  function alterarDataInicio(
-    novaData
-  ) {
-    setDataInicio(
-      novaData
-    )
+  ] = useState(true)
 
-    if (
-      relatorioSelecionado
-        ?.id === '001'
-    ) {
-      setDataFim(
-        adicionarDias(
-          novaData,
-          6
-        )
-      )
 
-      return
-    }
 
-    if (
-      dataFim &&
-      novaData > dataFim
-    ) {
-      setDataFim(
-        novaData
-      )
-    }
-  }
+  const [
 
-  function alterarDataFim(
-    novaData
-  ) {
-    setDataFim(
-      novaData
-    )
-  }
+    erroPacientes,
 
-  function semanaAnterior() {
-    const inicio =
-      adicionarDias(
-        dataInicio,
-        -7
-      )
+    setErroPacientes,
 
-    setDataInicio(
-      inicio
-    )
+  ] = useState('')
 
-    setDataFim(
-      adicionarDias(
-        inicio,
-        6
-      )
-    )
-  }
 
-  function proximaSemana() {
-    const inicio =
-      adicionarDias(
-        dataInicio,
-        7
-      )
 
-    setDataInicio(
-      inicio
-    )
+  const inicioSemana =
 
-    setDataFim(
-      adicionarDias(
-        inicio,
-        6
-      )
-    )
-  }
+    obterInicioSemana()
 
-  function imprimirRelatorio() {
-  window.print()
+
+
+  const [
+
+    dataInicio,
+
+    setDataInicio,
+
+  ] = useState(
+
+    inicioSemana
+
+  )
+
+
+
+  const [
+
+    dataFim,
+
+    setDataFim,
+
+  ] = useState(
+
+    adicionarDias(
+
+      inicioSemana,
+
+      6
+
+    )
+
+  )
+
+
+
+  // =========================================
+
+  // PACIENTES
+
+  // =========================================
+
+
+
+  useEffect(() => {
+
+    async function carregarPacientes() {
+
+      try {
+
+        setCarregandoPacientes(
+
+          true
+
+        )
+
+
+
+        setErroPacientes('')
+
+
+
+        const dados =
+
+          await buscarPacientesSupabase()
+
+
+
+        setPacientes(
+
+          dados
+
+        )
+
+      } catch (error) {
+
+        console.error(
+
+          'Erro ao carregar pacientes:',
+
+          error
+
+        )
+
+
+
+        setErroPacientes(
+
+          'Não foi possível carregar os pacientes.'
+
+        )
+
+      } finally {
+
+        setCarregandoPacientes(
+
+          false
+
+        )
+
+      }
+
+    }
+
+
+
+    carregarPacientes()
+
+  }, [])
+
+
+
+  // =========================================
+
+  // RELATÓRIO
+
+  // =========================================
+
+
+
+  function selecionarRelatorio(
+
+    relatorio
+
+  ) {
+
+    setRelatorioSelecionado(
+
+      relatorio
+
+    )
+
+
+
+    setPacienteSelecionado(
+
+      null
+
+    )
+
+
+
+    const inicio =
+
+      obterInicioSemana()
+
+
+
+    setDataInicio(
+
+      inicio
+
+    )
+
+
+
+    setDataFim(
+
+      adicionarDias(
+
+        inicio,
+
+        6
+
+      )
+
+    )
+
+  }
+
+
+
+  // =========================================
+
+  // DATAS
+
+  // =========================================
+
+
+
+  function alterarDataInicio(
+
+    novaData
+
+  ) {
+
+    setDataInicio(
+
+      novaData
+
+    )
+
+
+
+    if (
+
+      relatorioSelecionado
+
+        ?.id === '001'
+
+    ) {
+
+      setDataFim(
+
+        adicionarDias(
+
+          novaData,
+
+          6
+
+        )
+
+      )
+
+
+
+      return
+
+    }
+
+
+
+    if (
+
+      dataFim &&
+
+      novaData > dataFim
+
+    ) {
+
+      setDataFim(
+
+        novaData
+
+      )
+
+    }
+
+  }
+
+
+
+  function alterarDataFim(
+
+    novaData
+
+  ) {
+
+    setDataFim(
+
+      novaData
+
+    )
+
+  }
+
+
+
+  function semanaAnterior() {
+
+    const inicio =
+
+      adicionarDias(
+
+        dataInicio,
+
+        -7
+
+      )
+
+
+
+    setDataInicio(
+
+      inicio
+
+    )
+
+
+
+    setDataFim(
+
+      adicionarDias(
+
+        inicio,
+
+        6
+
+      )
+
+    )
+
+  }
+
+
+
+  function proximaSemana() {
+
+    const inicio =
+
+      adicionarDias(
+
+        dataInicio,
+
+        7
+
+      )
+
+
+
+    setDataInicio(
+
+      inicio
+
+    )
+
+
+
+    setDataFim(
+
+      adicionarDias(
+
+        inicio,
+
+        6
+
+      )
+
+    )
+
+  }
+
+
+
+  function imprimirRelatorio() {
+
+  window.print()
+
 }
+
+
 
 async function gerarPDF() {
-  if (
-    !relatorioSelecionado ||
-    !pacienteSelecionado
-  ) {
-    return
-  }
 
-  const elemento =
-    document.getElementById(
-      'relatorio-para-pdf'
-    )
+  if (
 
-  if (!elemento) {
-    return
-  }
+    !relatorioSelecionado ||
 
-  try {
-    /*
-      Esconde os botões enquanto
-      fazemos a captura.
-    */
-    elemento.classList.add(
-      'gerando-pdf'
-    )
+    !pacienteSelecionado
 
-    const canvas =
-      await html2canvas(
-        elemento,
-        {
-          scale: 2,
-          useCORS: true,
-          backgroundColor:
-            '#ffffff',
-        }
-      )
+  ) {
 
-    const imagem =
-      canvas.toDataURL(
-        'image/png'
-      )
+    return
 
-    /*
-      A4 em milímetros.
-    */
-    const pdf =
-      new jsPDF({
-        orientation:
-          'portrait',
-        unit: 'mm',
-        format: 'a4',
-      })
+  }
 
-    const larguraPagina =
-      pdf.internal
-        .pageSize
-        .getWidth()
 
-    const alturaPagina =
-      pdf.internal
-        .pageSize
-        .getHeight()
 
-    const margem = 10
+  const elemento =
 
-    const larguraUtil =
-      larguraPagina -
-      margem * 2
+    document.getElementById(
 
-    const alturaImagem =
-      (
-        canvas.height *
-        larguraUtil
-      ) /
-      canvas.width
+      'relatorio-para-pdf'
 
-    /*
-      Caso o relatório tenha mais
-      de uma página.
-    */
-    let alturaRestante =
-      alturaImagem
+    )
 
-    let posicao = margem
 
-    pdf.addImage(
-      imagem,
-      'PNG',
-      margem,
-      posicao,
-      larguraUtil,
-      alturaImagem
-    )
 
-    alturaRestante -=
-      alturaPagina -
-      margem * 2
+  if (!elemento) {
 
-    while (
-      alturaRestante > 0
-    ) {
-      pdf.addPage()
+    return
 
-      posicao =
-        margem -
-        (
-          alturaImagem -
-          alturaRestante
-        )
+  }
 
-      pdf.addImage(
-        imagem,
-        'PNG',
-        margem,
-        posicao,
-        larguraUtil,
-        alturaImagem
-      )
 
-      alturaRestante -=
-        alturaPagina -
-        margem * 2
-    }
 
-    /*
-      Nome do paciente seguro
-      para usar como arquivo.
-    */
-    const nomePaciente =
-      pacienteSelecionado.nome
-        .trim()
-        .normalize('NFD')
-        .replace(
-          /[\u0300-\u036f]/g,
-          ''
-        )
-        .replace(
-          /[^a-zA-Z0-9]+/g,
-          '-'
-        )
-        .replace(
-          /^-+|-+$/g,
-          ''
-        )
+  try {
 
-    const inicio =
-      dataInicio
-        .split('-')
-        .reverse()
-        .join('-')
+    /*
 
-    const fim =
-      dataFim
-        .split('-')
-        .reverse()
-        .join('-')
+      Esconde os botões enquanto
 
-    const nomeArquivo =
-      `SENSUS-MAP_${relatorioSelecionado.id}_${nomePaciente}_${inicio}_a_${fim}.pdf`
+      fazemos a captura.
 
-    pdf.save(
-      nomeArquivo
-    )
-  } catch (error) {
-    console.error(
-      'Erro ao gerar PDF:',
-      error
-    )
+    */
 
-    alert(
-      'Não foi possível gerar o PDF.'
-    )
-  } finally {
-    elemento.classList.remove(
-      'gerando-pdf'
-    )
-  }
+    elemento.classList.add(
+
+      'gerando-pdf'
+
+    )
+
+
+
+    const canvas =
+
+      await html2canvas(
+
+        elemento,
+
+        {
+
+          scale: 2,
+
+          useCORS: true,
+
+          backgroundColor:
+
+            '#ffffff',
+
+        }
+
+      )
+
+
+
+    const imagem =
+
+      canvas.toDataURL(
+
+        'image/png'
+
+      )
+
+
+
+    /*
+
+      A4 em milímetros.
+
+    */
+
+    const pdf =
+
+      new jsPDF({
+
+        orientation:
+
+          'portrait',
+
+        unit: 'mm',
+
+        format: 'a4',
+
+      })
+
+
+
+    const larguraPagina =
+
+      pdf.internal
+
+        .pageSize
+
+        .getWidth()
+
+
+
+    const alturaPagina =
+
+      pdf.internal
+
+        .pageSize
+
+        .getHeight()
+
+
+
+    const margem = 10
+
+
+
+    const larguraUtil =
+
+      larguraPagina -
+
+      margem * 2
+
+
+
+    const alturaImagem =
+
+      (
+
+        canvas.height *
+
+        larguraUtil
+
+      ) /
+
+      canvas.width
+
+
+
+    /*
+
+      Caso o relatório tenha mais
+
+      de uma página.
+
+    */
+
+    let alturaRestante =
+
+      alturaImagem
+
+
+
+    let posicao = margem
+
+
+
+    pdf.addImage(
+
+      imagem,
+
+      'PNG',
+
+      margem,
+
+      posicao,
+
+      larguraUtil,
+
+      alturaImagem
+
+    )
+
+
+
+    alturaRestante -=
+
+      alturaPagina -
+
+      margem * 2
+
+
+
+    while (
+
+      alturaRestante > 0
+
+    ) {
+
+      pdf.addPage()
+
+
+
+      posicao =
+
+        margem -
+
+        (
+
+          alturaImagem -
+
+          alturaRestante
+
+        )
+
+
+
+      pdf.addImage(
+
+        imagem,
+
+        'PNG',
+
+        margem,
+
+        posicao,
+
+        larguraUtil,
+
+        alturaImagem
+
+      )
+
+
+
+      alturaRestante -=
+
+        alturaPagina -
+
+        margem * 2
+
+    }
+
+
+
+    /*
+
+      Nome do paciente seguro
+
+      para usar como arquivo.
+
+    */
+
+    const nomePaciente =
+
+      pacienteSelecionado.nome
+
+        .trim()
+
+        .normalize('NFD')
+
+        .replace(
+
+          /[\u0300-\u036f]/g,
+
+          ''
+
+        )
+
+        .replace(
+
+          /[^a-zA-Z0-9]+/g,
+
+          '-'
+
+        )
+
+        .replace(
+
+          /^-+|-+$/g,
+
+          ''
+
+        )
+
+
+
+    const inicio =
+
+      dataInicio
+
+        .split('-')
+
+        .reverse()
+
+        .join('-')
+
+
+
+    const fim =
+
+      dataFim
+
+        .split('-')
+
+        .reverse()
+
+        .join('-')
+
+
+
+    const nomeArquivo =
+
+      `SENSUS-MAP_${relatorioSelecionado.id}_${nomePaciente}_${inicio}_a_${fim}.pdf`
+
+
+
+    pdf.save(
+
+      nomeArquivo
+
+    )
+
+  } catch (error) {
+
+    console.error(
+
+      'Erro ao gerar PDF:',
+
+      error
+
+    )
+
+
+
+    alert(
+
+      'Não foi possível gerar o PDF.'
+
+    )
+
+  } finally {
+
+    elemento.classList.remove(
+
+      'gerando-pdf'
+
+    )
+
+  }
+
 }
 
-  const mostrarDetalhes =
-    !pacienteSelecionado
 
-  // =========================================
-  // TELA
-  // =========================================
 
-  return (
-    <main className="pagina-relatorios">
+  const mostrarDetalhes =
 
-      <header className="dashboard-header">
+    !pacienteSelecionado
 
-        <div className="dashboard-marca">
-          SENSUS-MAP
-        </div>
 
-        <nav className="dashboard-nav">
 
-          <Link to="/dashboard">
-            Início
-          </Link>
+  // =========================================
 
-          <Link to="/pacientes">
-            Pacientes
-          </Link>
+  // TELA
 
-          <Link to="/agendamentos">
-            Agenda
-          </Link>
+  // =========================================
 
-          <Link
-            to="/relatorios"
-            className="nav-ativo"
-          >
-            Relatórios
-          </Link>
 
-        </nav>
 
-        <div className="dashboard-usuario">
+  return (
 
-          <span>
-            Psicólogo
-          </span>
+    <main className="pagina-relatorios">
 
-          <button
-            type="button"
-            className="botao-perfil"
-          >
-            Perfil
-          </button>
 
-        </div>
 
-      </header>
+      <header className="dashboard-header">
 
-      <section className="relatorios-container">
 
-        <section className="relatorios-conteudo">
 
-          <header className="relatorios-topo">
+        <div className="dashboard-marca">
 
-            <div>
-              <span>
-                SENSUS
-              </span>
+          SENSUS-MAP
 
-              <h1>
-                Relatórios
-              </h1>
+        </div>
 
-              <p>
-                Visualize e acompanhe os
-                registros emocionais dos
-                pacientes.
-              </p>
-            </div>
 
-          </header>
 
-          {/* DETALHES */}
+        <nav className="dashboard-nav">
 
-          {mostrarDetalhes && (
-            <DetalhesRelatorio
-              relatorioSelecionado={
-                relatorioSelecionado
-              }
-            />
-          )}
 
-          {/* CARREGANDO */}
 
-          {relatorioSelecionado &&
-            carregandoPacientes && (
-              <div className="relatorio-status">
-                Carregando pacientes...
-              </div>
-            )}
+          <Link to="/dashboard">
 
-          {/* ERRO */}
+            Início
 
-          {relatorioSelecionado &&
-            erroPacientes && (
-              <div className="relatorio-status relatorio-status-erro">
-                {erroPacientes}
-              </div>
-            )}
+          </Link>
 
-          {/* PACIENTE */}
 
-          {relatorioSelecionado &&
-            !carregandoPacientes &&
-            !erroPacientes && (
-              <SeletorPacienteRelatorio
-                pacientes={
-                  pacientes
-                }
-                pacienteSelecionado={
-                  pacienteSelecionado
-                }
-                onSelecionarPaciente={
-                  setPacienteSelecionado
-                }
-              />
-            )}
 
-          {/* PERÍODO */}
+          <Link to="/pacientes">
 
-          <FiltrosRelatorio
-            relatorioSelecionado={
-              relatorioSelecionado
-            }
-            pacienteSelecionado={
-              pacienteSelecionado
-            }
-            dataInicio={
-              dataInicio
-            }
-            dataFim={
-              dataFim
-            }
-            onAlterarDataInicio={
-              alterarDataInicio
-            }
-            onAlterarDataFim={
-              alterarDataFim
-            }
-            onSemanaAnterior={
-              semanaAnterior
-            }
-            onProximaSemana={
-              proximaSemana
-            }
-          />
+            Pacientes
 
-          {/* RELATÓRIO */}
+          </Link>
 
-          {relatorioSelecionado &&
-            pacienteSelecionado &&
-            dataInicio &&
-            dataFim && (
-              <section
-  className="relatorio-resultado-placeholder"
-  id="relatorio-para-pdf"
+
+
+          <Link to="/agendamentos">
+
+            Agenda
+
+          </Link>
+
+
+
+          <Link
+
+            to="/relatorios"
+
+            className="nav-ativo"
+
+          >
+
+            Relatórios
+
+          </Link>
+
+
+
+        </nav>
+
+
+
+        <div className="dashboard-usuario">
+
+
+
+          <span>
+
+            Psicólogo
+
+          </span>
+
+
+
+          <button
+
+            type="button"
+
+            className="botao-perfil"
+
+          >
+
+            Perfil
+
+          </button>
+
+
+
+        </div>
+
+
+
+      </header>
+
+
+
+      <section className="relatorios-container">
+
+
+
+        <section className="relatorios-conteudo">
+
+
+
+          <header className="relatorios-topo">
+
+
+
+            <div>
+
+              <span>
+
+                SENSUS
+
+              </span>
+
+
+
+              <h1>
+
+                Relatórios
+
+              </h1>
+
+
+
+              <p>
+
+                Visualize e acompanhe os
+
+                registros emocionais dos
+
+                pacientes.
+
+              </p>
+
+            </div>
+
+
+
+          </header>
+
+
+
+          {/* DETALHES */}
+
+
+
+          {mostrarDetalhes && (
+
+            <DetalhesRelatorio
+
+              relatorioSelecionado={
+
+                relatorioSelecionado
+
+              }
+
+            />
+
+          )}
+
+
+
+          {/* CARREGANDO */}
+
+
+
+          {relatorioSelecionado &&
+
+            carregandoPacientes && (
+
+              <div className="relatorio-status">
+
+                Carregando pacientes...
+
+              </div>
+
+            )}
+
+
+
+          {/* ERRO */}
+
+
+
+          {relatorioSelecionado &&
+
+            erroPacientes && (
+
+              <div className="relatorio-status relatorio-status-erro">
+
+                {erroPacientes}
+
+              </div>
+
+            )}
+
+
+
+          {/* PACIENTE */}
+
+
+
+          {relatorioSelecionado &&
+
+            !carregandoPacientes &&
+
+            !erroPacientes && (
+
+              <SeletorPacienteRelatorio
+
+                pacientes={
+
+                  pacientes
+
+                }
+
+                pacienteSelecionado={
+
+                  pacienteSelecionado
+
+                }
+
+                onSelecionarPaciente={
+
+                  setPacienteSelecionado
+
+                }
+
+              />
+
+            )}
+
+
+
+          {/* PERÍODO */}
+
+
+
+          <FiltrosRelatorio
+
+            relatorioSelecionado={
+
+              relatorioSelecionado
+
+            }
+
+            pacienteSelecionado={
+
+              pacienteSelecionado
+
+            }
+
+            dataInicio={
+
+              dataInicio
+
+            }
+
+            dataFim={
+
+              dataFim
+
+            }
+
+            onAlterarDataInicio={
+
+              alterarDataInicio
+
+            }
+
+            onAlterarDataFim={
+
+              alterarDataFim
+
+            }
+
+            onSemanaAnterior={
+
+              semanaAnterior
+
+            }
+
+            onProximaSemana={
+
+              proximaSemana
+
+            }
+
+          />
+
+
+
+          {/* RELATÓRIO */}
+
+
+
+          {relatorioSelecionado &&
+
+            pacienteSelecionado &&
+
+            dataInicio &&
+
+            dataFim && (
+
+              <section
+
+  className="relatorio-resultado-placeholder"
+
+  id="relatorio-para-pdf"
+
 >
-                <div className="relatorio-acoes">
-  <button
-    type="button"
-    onClick={imprimirRelatorio}
-  >
-    🖨 Imprimir
-  </button>
 
-  <button
-    type="button"
-    onClick={gerarPDF}
-  >
-    📄 Salvar em PDF
-  </button>
+                <div className="relatorio-acoes">
+
+  <button
+
+    type="button"
+
+    onClick={imprimirRelatorio}
+
+  >
+
+    🖨 Imprimir
+
+  </button>
+
+
+
+  <button
+
+    type="button"
+
+    onClick={gerarPDF}
+
+  >
+
+    📄 Salvar em PDF
+
+  </button>
+
 </div>
-                <div>
-                  <span>
-                    RELATÓRIO{' '}
-                    {
-                      relatorioSelecionado.id
-                    }
-                  </span>
 
-                  <h2>
-                    {
-                      relatorioSelecionado.nome
-                    }
-                  </h2>
+                <div>
 
-                  <p>
-                    Dados de{' '}
+                  <span>
 
-                    <strong>
-                      {
-                        pacienteSelecionado.nome
-                      }
-                    </strong>
-                  </p>
+                    RELATÓRIO{' '}
 
-                  <p className="relatorio-documento-periodo">
-  Período:{' '}
-  <strong>
-    {dataInicio}
-  </strong>
-  {' até '}
-  <strong>
-    {dataFim}
-  </strong>
+                    {
+
+                      relatorioSelecionado.id
+
+                    }
+
+                  </span>
+
+
+
+                  <h2>
+
+                    {
+
+                      relatorioSelecionado.nome
+
+                    }
+
+                  </h2>
+
+
+
+                  <p>
+
+                    Dados de{' '}
+
+
+
+                    <strong>
+
+                      {
+
+                        pacienteSelecionado.nome
+
+                      }
+
+                    </strong>
+
+                  </p>
+
+
+
+                  <p className="relatorio-documento-periodo">
+
+  Período:{' '}
+
+  <strong>
+
+    {dataInicio}
+
+  </strong>
+
+  {' até '}
+
+  <strong>
+
+    {dataFim}
+
+  </strong>
+
 </p>
 
-                </div>
 
-                <VisualizacaoRelatorio
-                  tipoRelatorio={
-                    relatorioSelecionado.id
-                  }
-                  paciente={
-                    pacienteSelecionado
-                  }
-                  dataInicio={
-                    dataInicio
-                  }
-                  dataFim={
-                    dataFim
-                  }
-                />
 
-              </section>
-            )}
+                </div>
 
-        </section>
 
-        <MenuRelatorios
-          relatorioSelecionado={
-            relatorioSelecionado
-          }
-          onSelecionarRelatorio={
-            selecionarRelatorio
-          }
-        />
 
-      </section>
+                <VisualizacaoRelatorio
 
-    </main>
-  )
+                  tipoRelatorio={
+
+                    relatorioSelecionado.id
+
+                  }
+
+                  paciente={
+
+                    pacienteSelecionado
+
+                  }
+
+                  dataInicio={
+
+                    dataInicio
+
+                  }
+
+                  dataFim={
+
+                    dataFim
+
+                  }
+
+                />
+
+
+
+              </section>
+
+            )}
+
+
+
+                    {/* BLOCO DE NOTAS - fora da área do PDF */}
+
+            <BlocoNotas
+  paciente={pacienteSelecionado}
+  tipoRelatorio={
+    relatorioSelecionado?.id
+  }
+/>
+
+          </section>
+
+
+
+        <MenuRelatorios
+
+          relatorioSelecionado={
+
+            relatorioSelecionado
+
+          }
+
+          onSelecionarRelatorio={
+
+            selecionarRelatorio
+
+          }
+
+        />
+
+
+
+      </section>
+
+
+
+    </main>
+
+  )
+
 }
+
+
 
 export default Relatorios

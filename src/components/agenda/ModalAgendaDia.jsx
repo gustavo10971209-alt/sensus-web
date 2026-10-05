@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import {
+  useState,
+} from 'react'
 
 function ModalAgendaDia({
   diaSelecionado,
@@ -10,60 +12,118 @@ function ModalAgendaDia({
   onEditarAgendamento,
   onExcluirAgendamento,
 }) {
-  const [filtroPaciente, setFiltroPaciente] = useState(
-    pacienteSelecionado?.id || 'todos'
+  const [
+    filtroPaciente,
+    setFiltroPaciente,
+  ] = useState(
+    pacienteSelecionado?.id ||
+      'todos'
   )
 
-  const [pesquisa, setPesquisa] = useState(
-    pacienteSelecionado?.nome || ''
+  const [
+    pesquisa,
+    setPesquisa,
+  ] = useState(
+    pacienteSelecionado?.nome ||
+      ''
   )
 
-  const [mostrarResultados, setMostrarResultados] =
-    useState(false)
+  const [
+    mostrarResultados,
+    setMostrarResultados,
+  ] = useState(false)
 
-  const [agendamentoParaExcluir, setAgendamentoParaExcluir] =
-    useState(null)
+  const [
+    agendamentoParaExcluir,
+    setAgendamentoParaExcluir,
+  ] = useState(null)
 
-  const [excluindo, setExcluindo] =
-    useState(false)
+  const [
+    excluindo,
+    setExcluindo,
+  ] = useState(false)
 
-  const pacientesFiltrados = pacientes.filter((paciente) =>
-    paciente.nome
-      .toLowerCase()
-      .includes(pesquisa.toLowerCase())
-  )
+  // =========================================
+  // FILTRO DE PACIENTES
+  // =========================================
 
-  const pacienteFiltroAtual = pacientes.find(
-    (paciente) => paciente.id === filtroPaciente
-  )
-
-  const agendamentosDoDia = agendamentos
-    .filter(
-      (agendamento) =>
-        agendamento.data === diaSelecionado
-    )
-    .filter((agendamento) => {
-      if (filtroPaciente === 'todos') {
-        return true
-      }
-
-      return agendamento.pacienteId === filtroPaciente
-    })
-    .sort((a, b) =>
-      a.horario.localeCompare(b.horario)
-    )
-
-  function buscarNomePaciente(pacienteId) {
-    const paciente = pacientes.find(
-      (item) => item.id === pacienteId
+  const pacientesFiltrados =
+    pacientes.filter(
+      (paciente) =>
+        paciente.nome
+          .toLowerCase()
+          .includes(
+            pesquisa.toLowerCase()
+          )
     )
 
-    return paciente?.nome || 'Paciente'
+  const pacienteFiltroAtual =
+    pacientes.find(
+      (paciente) =>
+        paciente.id ===
+        filtroPaciente
+    )
+
+  // =========================================
+  // AGENDAMENTOS DO DIA
+  // =========================================
+
+  const agendamentosDoDia =
+    agendamentos
+      .filter(
+        (agendamento) =>
+          agendamento.data ===
+          diaSelecionado
+      )
+      .filter((agendamento) => {
+        if (
+          filtroPaciente ===
+          'todos'
+        ) {
+          return true
+        }
+
+        return (
+          agendamento.pacienteId ===
+          filtroPaciente
+        )
+      })
+      .sort((a, b) =>
+        a.horario.localeCompare(
+          b.horario
+        )
+      )
+
+  // =========================================
+  // PACIENTE
+  // =========================================
+
+  function buscarNomePaciente(
+    pacienteId
+  ) {
+    const paciente =
+      pacientes.find(
+        (item) =>
+          item.id === pacienteId
+      )
+
+    return (
+      paciente?.nome ||
+      'Paciente'
+    )
   }
 
-  function selecionarPaciente(paciente) {
-    setFiltroPaciente(paciente.id)
-    setPesquisa(paciente.nome)
+  function selecionarPaciente(
+    paciente
+  ) {
+    setFiltroPaciente(
+      paciente.id
+    )
+
+    setPesquisa(
+      paciente.nome
+    )
+
     setMostrarResultados(false)
   }
 
@@ -73,8 +133,18 @@ function ModalAgendaDia({
     setMostrarResultados(false)
   }
 
-  function formatarDataCompleta(data) {
-    const [ano, mes, dia] = data
+  // =========================================
+  // DATA
+  // =========================================
+
+  function formatarDataCompleta(
+    data
+  ) {
+    const [
+      ano,
+      mes,
+      dia,
+    ] = data
       .split('-')
       .map(Number)
 
@@ -82,28 +152,72 @@ function ModalAgendaDia({
       ano,
       mes - 1,
       dia
-    ).toLocaleDateString('pt-BR', {
-      weekday: 'long',
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-    })
+    ).toLocaleDateString(
+      'pt-BR',
+      {
+        weekday: 'long',
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+      }
+    )
   }
 
-  function editarAgendamento(agendamento) {
-    onEditarAgendamento(agendamento)
+  function formatarDataHora(
+    data
+  ) {
+    if (!data) {
+      return null
+    }
+
+    return new Date(
+      data
+    ).toLocaleString(
+      'pt-BR',
+      {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      }
+    )
   }
 
-  function abrirConfirmacaoExclusao(agendamento) {
-    setAgendamentoParaExcluir(agendamento)
+  // =========================================
+  // EDITAR
+  // =========================================
+
+  function editarAgendamento(
+    agendamento
+  ) {
+    onEditarAgendamento(
+      agendamento
+    )
+  }
+
+  // =========================================
+  // EXCLUIR
+  // =========================================
+
+  function abrirConfirmacaoExclusao(
+    agendamento
+  ) {
+    setAgendamentoParaExcluir(
+      agendamento
+    )
   }
 
   function cancelarExclusao() {
-    setAgendamentoParaExcluir(null)
+    setAgendamentoParaExcluir(
+      null
+    )
   }
 
   async function confirmarExclusao() {
-    if (!agendamentoParaExcluir) {
+    if (
+      !agendamentoParaExcluir
+    ) {
       return
     }
 
@@ -114,7 +228,9 @@ function ModalAgendaDia({
         agendamentoParaExcluir.id
       )
 
-      setAgendamentoParaExcluir(null)
+      setAgendamentoParaExcluir(
+        null
+      )
     } catch (erro) {
       console.error(
         'Erro ao excluir agendamento:',
@@ -124,6 +240,10 @@ function ModalAgendaDia({
       setExcluindo(false)
     }
   }
+
+  // =========================================
+  // TELA
+  // =========================================
 
   return (
     <div
@@ -136,6 +256,8 @@ function ModalAgendaDia({
           event.stopPropagation()
         }
       >
+        {/* CABEÇALHO */}
+
         <div className="agenda-dia-cabecalho">
           <button
             type="button"
@@ -147,16 +269,24 @@ function ModalAgendaDia({
           </button>
 
           <div>
-            <span>AGENDA DO DIA</span>
+            <span>
+              AGENDA DO DIA
+            </span>
 
             <h2>
-              {formatarDataCompleta(diaSelecionado)}
+              {formatarDataCompleta(
+                diaSelecionado
+              )}
             </h2>
           </div>
         </div>
 
+        {/* FILTRO */}
+
         <div className="agenda-dia-filtro">
-          <label htmlFor="pesquisaPacienteDia">
+          <label
+            htmlFor="pesquisaPacienteDia"
+          >
             Filtrar por paciente
           </label>
 
@@ -170,19 +300,29 @@ function ModalAgendaDia({
               placeholder="Pesquisar paciente..."
               value={pesquisa}
               onChange={(event) => {
-                setPesquisa(event.target.value)
-                setMostrarResultados(true)
+                setPesquisa(
+                  event.target.value
+                )
+
+                setMostrarResultados(
+                  true
+                )
               }}
               onFocus={() =>
-                setMostrarResultados(true)
+                setMostrarResultados(
+                  true
+                )
               }
             />
 
-            {filtroPaciente !== 'todos' && (
+            {filtroPaciente !==
+              'todos' && (
               <button
                 type="button"
                 className="agenda-limpar-filtro"
-                onClick={limparFiltro}
+                onClick={
+                  limparFiltro
+                }
                 title="Limpar filtro"
               >
                 ×
@@ -194,45 +334,64 @@ function ModalAgendaDia({
             <div className="agenda-filtro-resultados">
               <button
                 type="button"
-                onClick={limparFiltro}
+                onClick={
+                  limparFiltro
+                }
               >
                 <div className="agenda-filtro-avatar">
                   T
                 </div>
 
                 <div>
-                  <strong>Todos os pacientes</strong>
-                  <span>Remover filtro</span>
+                  <strong>
+                    Todos os pacientes
+                  </strong>
+
+                  <span>
+                    Remover filtro
+                  </span>
                 </div>
               </button>
 
-              {pacientesFiltrados.map((paciente) => (
-                <button
-                  type="button"
-                  key={paciente.id}
-                  onClick={() =>
-                    selecionarPaciente(paciente)
-                  }
-                >
-                  <div className="agenda-filtro-avatar">
-                    {paciente.nome.charAt(0)}
-                  </div>
+              {pacientesFiltrados.map(
+                (paciente) => (
+                  <button
+                    type="button"
+                    key={
+                      paciente.id
+                    }
+                    onClick={() =>
+                      selecionarPaciente(
+                        paciente
+                      )
+                    }
+                  >
+                    <div className="agenda-filtro-avatar">
+                      {paciente.nome.charAt(
+                        0
+                      )}
+                    </div>
 
-                  <div>
-                    <strong>
-                      {paciente.nome}
-                    </strong>
+                    <div>
+                      <strong>
+                        {
+                          paciente.nome
+                        }
+                      </strong>
 
-                    <span>
-                      Filtrar agenda
-                    </span>
-                  </div>
-                </button>
-              ))}
+                      <span>
+                        Filtrar agenda
+                      </span>
+                    </div>
+                  </button>
+                )
+              )}
 
-              {pacientesFiltrados.length === 0 && (
+              {pacientesFiltrados.length ===
+                0 && (
                 <div className="agenda-filtro-vazio">
-                  Nenhum paciente encontrado.
+                  Nenhum paciente
+                  encontrado.
                 </div>
               )}
             </div>
@@ -244,83 +403,141 @@ function ModalAgendaDia({
                 Exibindo agenda de{' '}
 
                 <strong>
-                  {pacienteFiltroAtual.nome}
+                  {
+                    pacienteFiltroAtual.nome
+                  }
                 </strong>
               </div>
             )}
         </div>
 
+        {/* LISTA */}
+
         <div className="agenda-dia-lista">
-          {agendamentosDoDia.length > 0 ? (
-            agendamentosDoDia.map((agendamento) => (
-              <article
-                className="agenda-dia-item"
-                key={agendamento.id}
-              >
-                <div className="agenda-dia-horario">
-                  {agendamento.horario}
-                </div>
+          {agendamentosDoDia.length >
+          0 ? (
+            agendamentosDoDia.map(
+              (agendamento) => (
+                <article
+                  className="agenda-dia-item"
+                  key={
+                    agendamento.id
+                  }
+                >
+                  <div className="agenda-dia-horario">
+                    {
+                      agendamento.horario
+                    }
+                  </div>
 
-                <div className="agenda-dia-informacoes">
-                  <strong>
-                    {buscarNomePaciente(
-                      agendamento.pacienteId
+                  <div className="agenda-dia-informacoes">
+                    <strong>
+                      {buscarNomePaciente(
+                        agendamento.pacienteId
+                      )}
+                    </strong>
+
+                    <span>
+                      {
+                        agendamento.duracao
+                      }{' '}
+                      minutos
+                    </span>
+
+                    {agendamento.observacao && (
+                      <p>
+                        {
+                          agendamento.observacao
+                        }
+                      </p>
                     )}
-                  </strong>
 
-                  <span>
-                    {agendamento.duracao} minutos
-                  </span>
+                    {/* RESPONSABILIDADE */}
 
-                  {agendamento.observacao && (
-                    <p>
-                      {agendamento.observacao}
-                    </p>
-                  )}
-                </div>
+                    <div className="agenda-responsabilidade">
+                      <div>
+                        <span className="agenda-responsabilidade-titulo">
+                          Criado por
+                        </span>
 
-                <div className="agenda-dia-acoes">
-                  <button
-                    type="button"
-                    className="agenda-editar"
-                    onClick={() =>
-                      editarAgendamento(
-                        agendamento
-                      )
-                    }
-                  >
-                    Editar
-                  </button>
+                        <strong>
+                          {agendamento.criadoPorNome ||
+                            'Não registrado'}
+                        </strong>
+                      </div>
 
-                  <button
-                    type="button"
-                    className="agenda-excluir"
-                    onClick={() =>
-                      abrirConfirmacaoExclusao(
-                        agendamento
-                      )
-                    }
-                  >
-                    Excluir
-                  </button>
-                </div>
-              </article>
-            ))
+                      {agendamento.editadoPorNome && (
+                        <div>
+                          <span className="agenda-responsabilidade-titulo">
+                            Última edição
+                          </span>
+
+                          <strong>
+                            {
+                              agendamento.editadoPorNome
+                            }
+                          </strong>
+
+                          {agendamento.atualizadoEm && (
+                            <small>
+                              {formatarDataHora(
+                                agendamento.atualizadoEm
+                              )}
+                            </small>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="agenda-dia-acoes">
+                    <button
+                      type="button"
+                      className="agenda-editar"
+                      onClick={() =>
+                        editarAgendamento(
+                          agendamento
+                        )
+                      }
+                    >
+                      Editar
+                    </button>
+
+                    <button
+                      type="button"
+                      className="agenda-excluir"
+                      onClick={() =>
+                        abrirConfirmacaoExclusao(
+                          agendamento
+                        )
+                      }
+                    >
+                      Excluir
+                    </button>
+                  </div>
+                </article>
+              )
+            )
           ) : (
             <div className="agenda-dia-vazia">
               <div>○</div>
 
               <strong>
-                Nenhum atendimento agendado
+                Nenhum atendimento
+                agendado
               </strong>
 
               <p>
-                Não existem atendimentos para este dia
-                com o filtro selecionado.
+                Não existem
+                atendimentos para este
+                dia com o filtro
+                selecionado.
               </p>
             </div>
           )}
         </div>
+
+        {/* RODAPÉ */}
 
         <div className="agenda-dia-rodape">
           <button
@@ -328,9 +545,12 @@ function ModalAgendaDia({
             className="agenda-criar"
             onClick={() =>
               onCriarAgendamento({
-                data: diaSelecionado,
+                data:
+                  diaSelecionado,
+
                 pacienteId:
-                  filtroPaciente === 'todos'
+                  filtroPaciente ===
+                  'todos'
                     ? null
                     : filtroPaciente,
               })
@@ -340,11 +560,14 @@ function ModalAgendaDia({
           </button>
         </div>
 
+        {/* CONFIRMAÇÃO DE EXCLUSÃO */}
+
         {agendamentoParaExcluir && (
           <div className="agenda-confirmar-exclusao">
             <div className="agenda-confirmar-exclusao-caixa">
               <h3>
-                Excluir agendamento?
+                Excluir
+                agendamento?
               </h3>
 
               <p>
@@ -359,7 +582,9 @@ function ModalAgendaDia({
                 {' '}às{' '}
 
                 <strong>
-                  {agendamentoParaExcluir.horario}
+                  {
+                    agendamentoParaExcluir.horario
+                  }
                 </strong>
 
                 {' '}será excluído.
@@ -368,8 +593,12 @@ function ModalAgendaDia({
               <div className="agenda-confirmar-exclusao-acoes">
                 <button
                   type="button"
-                  onClick={cancelarExclusao}
-                  disabled={excluindo}
+                  onClick={
+                    cancelarExclusao
+                  }
+                  disabled={
+                    excluindo
+                  }
                 >
                   Cancelar
                 </button>
@@ -377,8 +606,12 @@ function ModalAgendaDia({
                 <button
                   type="button"
                   className="agenda-excluir"
-                  onClick={confirmarExclusao}
-                  disabled={excluindo}
+                  onClick={
+                    confirmarExclusao
+                  }
+                  disabled={
+                    excluindo
+                  }
                 >
                   {excluindo
                     ? 'Excluindo...'

@@ -33,6 +33,9 @@ import ProximosAgendamentos
 import ModalSelecionarPaciente
   from '../components/dashboard/ModalSelecionarPaciente'
 
+import BlocoNotas
+  from '../components/notas/BlocoNotas'
+
 function Dashboard() {
   const navigate = useNavigate()
 
@@ -236,6 +239,10 @@ function Dashboard() {
     navigate('/perfil')
   }
 
+  function abrirAjuda() {
+    navigate('/ajuda')
+  }
+
   function abrirDadosPaciente() {
     if (!pacienteSelecionado) {
       return
@@ -263,9 +270,7 @@ function Dashboard() {
   return (
     <main className="pagina-dashboard">
 
-      {/* =====================================
-          CABEÇALHO
-      ===================================== */}
+      {/* CABEÇALHO */}
 
       <header className="dashboard-header">
 
@@ -315,15 +320,11 @@ function Dashboard() {
 
       </header>
 
-      {/* =====================================
-          CONTEÚDO
-      ===================================== */}
+      {/* CONTEÚDO */}
 
       <section className="dashboard-conteudo">
 
-        {/* ===================================
-            PAINEL PRINCIPAL
-        =================================== */}
+        {/* PAINEL PRINCIPAL */}
 
         <section className="dashboard-principal">
 
@@ -370,11 +371,20 @@ function Dashboard() {
             }
           />
 
+          {/* BLOCO DE NOTAS DO PACIENTE */}
+
+          {pacienteSelecionado && (
+            <BlocoNotas
+              paciente={
+                pacienteSelecionado
+              }
+              limiteInicial={3}
+            />
+          )}
+
         </section>
 
-        {/* ===================================
-            AGENDA
-        =================================== */}
+        {/* AGENDA */}
 
         <ProximosAgendamentos
           agendamentos={
@@ -390,18 +400,14 @@ function Dashboard() {
 
       </section>
 
-      {/* =====================================
-          MENU FLUTUANTE
-      ===================================== */}
+      {/* MENU FLUTUANTE */}
 
       <div className="atalhos-dashboard">
 
         <button
           type="button"
           className="atalho-item"
-          onClick={
-            abrirAgenda
-          }
+          onClick={abrirAgenda}
         >
 
           <span className="atalho-icone">
@@ -417,6 +423,7 @@ function Dashboard() {
         <button
           type="button"
           className="atalho-item"
+          onClick={abrirAjuda}
         >
 
           <span className="atalho-icone">
@@ -429,26 +436,9 @@ function Dashboard() {
 
         </button>
 
-        <button
-          type="button"
-          className="atalho-item"
-        >
-
-          <span className="atalho-icone">
-            ⚙
-          </span>
-
-          <span className="atalho-texto">
-            Configurações
-          </span>
-
-        </button>
-
       </div>
 
-      {/* =====================================
-          MODAL DE PACIENTES
-      ===================================== */}
+      {/* MODAL DE PACIENTES */}
 
       <ModalSelecionarPaciente
         aberto={

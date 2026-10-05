@@ -7929,3 +7929,1691 @@ input:focus {
     width: 100%;
   }
 }
+
+/* =========================================================
+   RESPONSABILIDADE DOS AGENDAMENTOS
+========================================================= */
+
+.agenda-responsabilidade {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 12px 28px;
+
+  margin-top: 14px;
+  padding-top: 12px;
+
+  border-top:
+    1px solid rgba(102, 92, 82, 0.12);
+}
+
+.agenda-responsabilidade > div {
+  display: flex;
+  flex-direction: column;
+
+  gap: 2px;
+}
+
+.agenda-responsabilidade-titulo {
+  color: #cc5b14;
+
+  font-size: 0.7rem;
+  font-weight: 700;
+
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.agenda-responsabilidade strong {
+  color: #665c52;
+
+  font-size: 0.84rem;
+}
+
+.agenda-responsabilidade small {
+  color: #665c52;
+
+  font-size: 0.74rem;
+
+  opacity: 0.75;
+}
+
+/* =========================================================
+   PÁGINA DA AGENDA - CABEÇALHO E FILTROS
+========================================================= */
+
+.agenda-pagina-conteudo {
+  width: 100%;
+  box-sizing: border-box;
+
+  padding:
+    32px
+    clamp(20px, 4vw, 60px)
+    50px;
+}
+
+.agenda-pagina-topo {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 24px;
+
+  max-width: 1500px;
+
+  margin:
+    0 auto 22px;
+}
+
+.agenda-pagina-etiqueta {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #cc5b14;
+
+  font-size: 0.76rem;
+  font-weight: 800;
+
+  letter-spacing: 0.12em;
+}
+
+.agenda-pagina-topo h1 {
+  margin: 0;
+
+  color: #37454b;
+
+  font-size: clamp(
+    1.65rem,
+    3vw,
+    2.35rem
+  );
+
+  line-height: 1.1;
+}
+
+.agenda-pagina-topo p {
+  margin:
+    8px 0 0;
+
+  color: #665c52;
+
+  font-size: 0.92rem;
+}
+
+/* =========================================================
+   FILTROS GERAIS
+========================================================= */
+
+.agenda-filtros-gerais {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  max-width: 1500px;
+
+  margin:
+    0 auto 20px;
+
+  padding: 14px 16px;
+
+  border:
+    1px solid rgba(
+      102,
+      92,
+      82,
+      0.12
+    );
+
+  border-radius: 14px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.48
+    );
+}
+
+.agenda-filtros-botoes {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 8px;
+}
+
+.agenda-filtro-botao {
+  min-height: 38px;
+
+  padding:
+    8px 16px;
+
+  border:
+    1px solid rgba(
+      102,
+      92,
+      82,
+      0.18
+    );
+
+  border-radius: 10px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.55
+    );
+
+  color: #665c52;
+
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.agenda-filtro-botao:hover {
+  transform:
+    translateY(-1px);
+
+  border-color:
+    rgba(
+      204,
+      91,
+      20,
+      0.45
+    );
+}
+
+.agenda-filtro-botao-ativo {
+  border-color: #cc5b14;
+
+  background: #cc5b14;
+
+  color: #ffffff;
+}
+
+/* =========================================================
+   SELECT DE RESPONSÁVEL
+========================================================= */
+
+.agenda-filtro-responsavel {
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+
+  min-width: 220px;
+}
+
+.agenda-filtro-responsavel label {
+  color: #665c52;
+
+  font-size: 0.72rem;
+  font-weight: 800;
+
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.agenda-filtro-responsavel select {
+  min-height: 40px;
+
+  padding:
+    8px 34px
+    8px 12px;
+
+  border:
+    1px solid rgba(
+      102,
+      92,
+      82,
+      0.2
+    );
+
+  border-radius: 10px;
+
+  outline: none;
+
+  background: #ffffff;
+
+  color: #37454b;
+
+  font-family: inherit;
+  font-size: 0.86rem;
+
+  cursor: pointer;
+}
+
+.agenda-filtro-responsavel select:focus {
+  border-color: #74b3a7;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(
+      116,
+      179,
+      167,
+      0.14
+    );
+}
+
+/* =========================================================
+   AJUSTE DO CONTAINER ANTIGO DA AGENDA
+========================================================= */
+
+.agenda-pagina-conteudo
+.agenda-container {
+  max-width: 1500px;
+
+  margin:
+    0 auto;
+}
+
+/* =========================================================
+   RESPONSIVO
+========================================================= */
+
+@media (
+  max-width: 800px
+) {
+  .agenda-pagina-conteudo {
+    padding:
+      22px 14px
+      40px;
+  }
+
+  .agenda-filtros-gerais {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .agenda-filtro-responsavel {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .agenda-filtro-responsavel select {
+    width: 100%;
+  }
+
+  .agenda-filtros-botoes {
+    width: 100%;
+  }
+
+  .agenda-filtro-botao {
+    flex: 1;
+  }
+}
+
+/* =========================================================
+   CORREÇÃO FINAL - ESTRUTURA DA AGENDA
+========================================================= */
+
+body .pagina-agendamentos {
+  display: block !important;
+  width: 100% !important;
+  min-height: 100vh !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* NAVBAR */
+
+body .pagina-agendamentos > .dashboard-header {
+  display: flex !important;
+
+  width: calc(100% - 40px) !important;
+  max-width: none !important;
+
+  min-height: 70px !important;
+  height: auto !important;
+
+  margin: 20px auto 0 !important;
+  padding: 12px 35px !important;
+
+  box-sizing: border-box !important;
+}
+
+/* CONTEÚDO ABAIXO DA NAVBAR */
+
+body .pagina-agendamentos > .agenda-pagina-conteudo {
+  display: block !important;
+
+  width: calc(100% - 80px) !important;
+  max-width: 1650px !important;
+
+  margin: 0 auto !important;
+  padding: 24px 0 40px !important;
+
+  box-sizing: border-box !important;
+}
+
+/* TÍTULO */
+
+body .pagina-agendamentos .agenda-pagina-topo {
+  width: 100% !important;
+
+  margin: 0 0 18px !important;
+}
+
+/* FILTROS */
+
+body .pagina-agendamentos .agenda-filtros-gerais {
+  width: 100% !important;
+
+  margin: 0 0 18px !important;
+
+  box-sizing: border-box !important;
+}
+
+/* CARD DA AGENDA */
+
+body .pagina-agendamentos .agenda-container {
+  display: grid !important;
+
+  grid-template-columns:
+    320px minmax(0, 1fr) !important;
+
+  width: 100% !important;
+  max-width: none !important;
+
+  height: auto !important;
+  min-height: 650px !important;
+
+  margin: 0 !important;
+
+  box-sizing: border-box !important;
+}
+
+/* =========================================================
+   AGENDA - AJUSTE VISUAL FINAL
+   Referência: tela "Meus pacientes"
+========================================================= */
+
+/* Remove qualquer espaço externo da página */
+html,
+body,
+#root {
+  margin: 0;
+  width: 100%;
+  min-height: 100%;
+}
+
+/* =========================================================
+   NAVBAR DA AGENDA
+   Encostada nas duas laterais, igual Pacientes
+========================================================= */
+
+body .pagina-agendamentos > .dashboard-header {
+  width: 100% !important;
+  max-width: none !important;
+
+  margin: 0 !important;
+
+  border-radius: 0 !important;
+
+  box-sizing: border-box !important;
+}
+
+/* =========================================================
+   CONTEÚDO DA AGENDA
+========================================================= */
+
+body .pagina-agendamentos > .agenda-pagina-conteudo {
+  width: min(1280px, calc(100% - 48px)) !important;
+  max-width: 1280px !important;
+
+  margin: 0 auto !important;
+
+  padding:
+    26px 0
+    45px !important;
+
+  box-sizing: border-box !important;
+}
+
+/* =========================================================
+   TÍTULO E FILTROS
+========================================================= */
+
+body .pagina-agendamentos .agenda-pagina-topo,
+body .pagina-agendamentos .agenda-filtros-gerais {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+body .pagina-agendamentos .agenda-pagina-topo {
+  margin-bottom: 16px !important;
+}
+
+body .pagina-agendamentos .agenda-filtros-gerais {
+  margin-bottom: 18px !important;
+}
+
+/* =========================================================
+   CARD PRINCIPAL
+========================================================= */
+
+body .pagina-agendamentos .agenda-container {
+  display: grid !important;
+
+  grid-template-columns:
+    245px
+    minmax(0, 1fr) !important;
+
+  width: 100% !important;
+  max-width: none !important;
+
+  min-height: 590px !important;
+  height: auto !important;
+
+  margin: 0 !important;
+
+  border-radius: 20px !important;
+
+  overflow: hidden;
+}
+
+/* =========================================================
+   COLUNA DE PACIENTES
+========================================================= */
+
+body .pagina-agendamentos .agenda-pacientes {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+/* =========================================================
+   ÁREA DO CALENDÁRIO
+========================================================= */
+
+body .pagina-agendamentos .agenda-calendario {
+  width: 100% !important;
+  min-width: 0 !important;
+
+  padding: 0 !important;
+}
+
+/* Cabeçalho */
+
+body .pagina-agendamentos
+.agenda-calendario-cabecalho {
+  padding:
+    20px 24px !important;
+
+  min-height: 90px !important;
+}
+
+/* =========================================================
+   CALENDÁRIO MENSAL
+========================================================= */
+
+body .pagina-agendamentos .calendario-mensal {
+  width: auto !important;
+
+  max-width: 850px !important;
+
+  margin:
+    22px auto
+    26px !important;
+
+  padding:
+    22px !important;
+
+  box-sizing: border-box !important;
+}
+
+/* Grade não fica achatada */
+
+body .pagina-agendamentos .calendario-grade {
+  width: 100% !important;
+}
+
+/* Dá mais altura aos dias */
+
+body .pagina-agendamentos .calendario-dia,
+body .pagina-agendamentos .calendario-dia-vazio {
+  min-height: 72px !important;
+}
+
+/* =========================================================
+   TELAS GRANDES
+========================================================= */
+
+@media (min-width: 1500px) {
+
+  body .pagina-agendamentos
+  > .agenda-pagina-conteudo {
+    max-width: 1350px !important;
+  }
+
+  body .pagina-agendamentos
+  .calendario-mensal {
+    max-width: 900px !important;
+  }
+
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+
+  body .pagina-agendamentos
+  > .agenda-pagina-conteudo {
+    width:
+      calc(100% - 30px)
+      !important;
+  }
+
+  body .pagina-agendamentos
+  .agenda-container {
+    grid-template-columns:
+      1fr !important;
+  }
+
+  body .pagina-agendamentos
+  .calendario-mensal {
+    max-width: none !important;
+
+    margin:
+      16px !important;
+  }
+
+}
+
+/* =========================================================
+   CORREÇÃO DO CALENDÁRIO
+   Mantém o calendário preenchendo sua área
+========================================================= */
+
+body .pagina-agendamentos .calendario-mensal {
+  width: auto !important;
+  max-width: none !important;
+
+  margin: 24px !important;
+  padding: 24px !important;
+
+  box-sizing: border-box !important;
+}
+
+/* Grade ocupa toda a largura disponível */
+
+body .pagina-agendamentos .calendario-grade {
+  width: 100% !important;
+}
+
+/* Dias com proporção confortável */
+
+body .pagina-agendamentos .calendario-dia,
+body .pagina-agendamentos .calendario-dia-vazio {
+  min-height: 72px !important;
+}
+
+/* Card geral um pouco mais estreito,
+   sem esmagar o calendário */
+
+body .pagina-agendamentos > .agenda-pagina-conteudo {
+  width: min(
+    1180px,
+    calc(100% - 48px)
+  ) !important;
+
+  max-width: 1180px !important;
+}
+
+/* Coluna de pacientes proporcional */
+
+body .pagina-agendamentos .agenda-container {
+  grid-template-columns:
+    240px minmax(0, 1fr) !important;
+}
+
+/* =========================================================
+   AGENDA - PESQUISA DE PSICÓLOGO
+========================================================= */
+
+.agenda-pesquisa-psicologo {
+  position: relative;
+
+  flex: 1;
+
+  max-width: 520px;
+  min-width: 260px;
+
+  margin-left: 20px;
+}
+
+.agenda-pesquisa-campo {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding:
+    0 14px;
+
+  min-height: 44px;
+
+  background:
+    rgba(255, 255, 255, 0.92);
+
+  border:
+    1px solid
+    rgba(102, 92, 82, 0.16);
+
+  border-radius: 12px;
+
+  box-sizing: border-box;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.agenda-pesquisa-campo:focus-within {
+  border-color:
+    #74b3a7;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(116, 179, 167, 0.14);
+}
+
+.agenda-pesquisa-icone {
+  flex: 0 0 auto;
+
+  color:
+    #665c52;
+
+  font-size: 20px;
+}
+
+.agenda-pesquisa-campo input {
+  width: 100%;
+
+  border: none;
+  outline: none;
+
+  background:
+    transparent;
+
+  color:
+    #37454b;
+
+  font-family:
+    inherit;
+
+  font-size:
+    14px;
+}
+
+.agenda-pesquisa-campo input::placeholder {
+  color:
+    rgba(102, 92, 82, 0.7);
+}
+
+.agenda-pesquisa-limpar {
+  width: 28px;
+  height: 28px;
+
+  flex: 0 0 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 50%;
+
+  background:
+    rgba(102, 92, 82, 0.1);
+
+  color:
+    #665c52;
+
+  font-size: 20px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.agenda-pesquisa-limpar:hover {
+  background:
+    rgba(102, 92, 82, 0.18);
+}
+
+/* LISTA DE RESULTADOS */
+
+.agenda-pesquisa-resultados {
+  position: absolute;
+
+  top:
+    calc(100% + 7px);
+
+  left: 0;
+  right: 0;
+
+  z-index: 100;
+
+  max-height: 260px;
+
+  overflow-y: auto;
+
+  padding: 7px;
+
+  background:
+    #f7f3e7;
+
+  border:
+    1px solid
+    rgba(102, 92, 82, 0.18);
+
+  border-radius: 12px;
+
+  box-shadow:
+    0 12px 28px
+    rgba(55, 69, 75, 0.18);
+}
+
+.agenda-pesquisa-resultado {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  padding:
+    9px 10px;
+
+  border: none;
+  border-radius: 9px;
+
+  background:
+    transparent;
+
+  color:
+    #4f4842;
+
+  font-family:
+    inherit;
+
+  font-size:
+    14px;
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.agenda-pesquisa-resultado:hover {
+  background:
+    rgba(116, 179, 167, 0.18);
+}
+
+.agenda-pesquisa-avatar {
+  width: 32px;
+  height: 32px;
+
+  flex: 0 0 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    #74b3a7;
+
+  color:
+    white;
+
+  font-weight: 700;
+}
+
+.agenda-pesquisa-vazio {
+  padding:
+    14px 12px;
+
+  color:
+    #786e65;
+
+  font-size:
+    13px;
+
+  text-align: center;
+}
+
+/* =========================================================
+   AJUSTE DA BARRA DE FILTROS
+========================================================= */
+
+.agenda-filtros-gerais {
+  display: flex !important;
+  align-items: center !important;
+
+  gap: 20px;
+}
+
+.agenda-filtros-botoes {
+  flex: 0 0 auto;
+}
+
+.agenda-pesquisa-psicologo {
+  margin-left: auto;
+}
+
+/* =========================================================
+   RESPONSIVO
+========================================================= */
+
+@media (max-width: 800px) {
+
+  .agenda-filtros-gerais {
+    flex-direction:
+      column;
+
+    align-items:
+      stretch !important;
+  }
+
+  .agenda-pesquisa-psicologo {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+
+    margin-left: 0;
+  }
+
+}
+
+/* =========================================================
+   BLOCO DE NOTAS
+   ========================================================= */
+
+.bloco-notas {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 28px;
+  padding: 28px;
+
+  background: rgba(246, 243, 228, 0.96);
+
+  border: 1px solid rgba(102, 92, 82, 0.18);
+  border-radius: 18px;
+
+  box-shadow:
+    0 10px 30px rgba(55, 69, 75, 0.08);
+}
+
+
+/* =========================================================
+   CABEÇALHO
+   ========================================================= */
+
+.bloco-notas-cabecalho {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  margin-bottom: 22px;
+}
+
+.bloco-notas-etiqueta {
+  display: inline-block;
+
+  margin-bottom: 7px;
+
+  color: #08705f;
+
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.bloco-notas-cabecalho h3 {
+  margin: 0;
+
+  color: #37454b;
+
+  font-size: 1.45rem;
+  font-weight: 800;
+}
+
+.bloco-notas-cabecalho p {
+  margin: 6px 0 0;
+
+  color: #665c52;
+
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   EDITOR
+   ========================================================= */
+
+.bloco-notas-editor {
+  padding: 18px;
+
+  background: rgba(255, 255, 255, 0.72);
+
+  border: 1px solid rgba(102, 92, 82, 0.15);
+  border-radius: 14px;
+}
+
+.bloco-notas-editor textarea {
+  display: block;
+
+  width: 100%;
+  min-height: 110px;
+
+  box-sizing: border-box;
+
+  padding: 14px 16px;
+
+  resize: vertical;
+
+  background: #fff;
+
+  border: 1px solid rgba(102, 92, 82, 0.28);
+  border-radius: 11px;
+
+  outline: none;
+
+  color: #37454b;
+
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.55;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.bloco-notas-editor textarea::placeholder {
+  color: #8c918f;
+}
+
+.bloco-notas-editor textarea:focus {
+  border-color: #74b3a7;
+
+  box-shadow:
+    0 0 0 3px rgba(116, 179, 167, 0.16);
+}
+
+
+/* =========================================================
+   AÇÕES DO EDITOR
+   ========================================================= */
+
+.bloco-notas-editor-acoes {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+
+  margin-top: 13px;
+}
+
+.bloco-notas-editor-acoes button {
+  min-height: 40px;
+
+  padding: 9px 16px;
+
+  border: none;
+  border-radius: 9px;
+
+  cursor: pointer;
+
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease,
+    background 0.15s ease;
+}
+
+.bloco-notas-editor-acoes button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.bloco-notas-editor-acoes button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+
+/* SALVAR */
+
+.bloco-notas-salvar {
+  background: #08705f;
+  color: #fff;
+}
+
+.bloco-notas-salvar:hover:not(:disabled) {
+  background: #075f51;
+}
+
+
+/* CANCELAR */
+
+.bloco-notas-cancelar {
+  background: #e6e1cf;
+  color: #665c52;
+}
+
+.bloco-notas-cancelar:hover:not(:disabled) {
+  background: #dad4c0;
+}
+
+
+/* =========================================================
+   ERRO
+   ========================================================= */
+
+.bloco-notas-erro {
+  margin: 10px 0 0;
+
+  color: #a44232;
+
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   LISTA
+   ========================================================= */
+
+.bloco-notas-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+
+  margin-top: 20px;
+}
+
+
+/* =========================================================
+   NOTA
+   ========================================================= */
+
+.bloco-notas-item {
+  padding: 17px 18px;
+
+  background: rgba(255, 255, 255, 0.78);
+
+  border: 1px solid rgba(102, 92, 82, 0.14);
+  border-left: 4px solid #74b3a7;
+  border-radius: 12px;
+
+  box-shadow:
+    0 4px 14px rgba(55, 69, 75, 0.05);
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.bloco-notas-item:hover {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 7px 18px rgba(55, 69, 75, 0.08);
+}
+
+
+/* =========================================================
+   TOPO DA NOTA
+   ========================================================= */
+
+.bloco-notas-item-topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.bloco-notas-item-topo > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.bloco-notas-item-topo strong {
+  color: #37454b;
+
+  font-size: 0.91rem;
+  font-weight: 800;
+}
+
+.bloco-notas-item-topo span {
+  color: #7c817e;
+
+  font-size: 0.76rem;
+}
+
+
+/* =========================================================
+   EDITAR / EXCLUIR
+   ========================================================= */
+
+.bloco-notas-item-acoes {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  flex-shrink: 0;
+}
+
+.bloco-notas-item-acoes button {
+  padding: 6px 10px;
+
+  background: #e6e1cf;
+
+  border: none;
+  border-radius: 7px;
+
+  cursor: pointer;
+
+  color: #665c52;
+
+  font-family: inherit;
+  font-size: 0.76rem;
+  font-weight: 700;
+
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease;
+}
+
+.bloco-notas-item-acoes button:hover {
+  background: #d9d3bf;
+
+  transform: translateY(-1px);
+}
+
+.bloco-notas-item-acoes .bloco-notas-excluir {
+  background: rgba(204, 91, 20, 0.1);
+
+  color: #a94812;
+}
+
+.bloco-notas-item-acoes .bloco-notas-excluir:hover {
+  background: rgba(204, 91, 20, 0.18);
+}
+
+
+/* =========================================================
+   TEXTO DA NOTA
+   ========================================================= */
+
+.bloco-notas-texto {
+  margin: 15px 0 0;
+
+  color: #37454b;
+
+  font-size: 0.93rem;
+  line-height: 1.6;
+
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+
+/* =========================================================
+   DATA DE EDIÇÃO
+   ========================================================= */
+
+.bloco-notas-editado {
+  display: block;
+
+  margin-top: 12px;
+
+  color: #8a8f8c;
+
+  font-size: 0.72rem;
+  font-style: italic;
+}
+
+
+/* =========================================================
+   SEM ANOTAÇÕES
+   ========================================================= */
+
+.bloco-notas-vazio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: 30px 20px;
+
+  text-align: center;
+
+  background: rgba(255, 255, 255, 0.48);
+
+  border: 1px dashed rgba(102, 92, 82, 0.25);
+  border-radius: 12px;
+}
+
+.bloco-notas-vazio > span {
+  margin-bottom: 8px;
+
+  font-size: 1.6rem;
+}
+
+.bloco-notas-vazio strong {
+  color: #37454b;
+
+  font-size: 0.94rem;
+}
+
+.bloco-notas-vazio p {
+  margin: 6px 0 0;
+
+  color: #777d79;
+
+  font-size: 0.83rem;
+}
+
+
+/* =========================================================
+   CARREGANDO
+   ========================================================= */
+
+.bloco-notas-mensagem {
+  margin: 0;
+
+  padding: 22px;
+
+  text-align: center;
+
+  color: #665c52;
+
+  font-size: 0.9rem;
+}
+
+
+/* =========================================================
+   RESPONSIVO
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+  .bloco-notas {
+    padding: 20px;
+    border-radius: 14px;
+  }
+
+  .bloco-notas-item-topo {
+    flex-direction: column;
+  }
+
+  .bloco-notas-item-acoes {
+    width: 100%;
+  }
+
+  .bloco-notas-editor-acoes {
+    flex-wrap: wrap;
+  }
+
+  .bloco-notas-editor-acoes button {
+    flex: 1;
+  }
+}
+
+/* ========================================
+   BOTÃO - HISTÓRICO EMOCIONAL
+======================================== */
+
+.emocao-historico-expandir {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.emocao-historico-expandir button {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+
+  background: #74b3a7;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.emocao-historico-expandir button:hover {
+  background: #08705f;
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 4px 10px
+    rgba(0, 0, 0, 0.12);
+}
+
+.emocao-historico-expandir button:active {
+  transform: translateY(0);
+}
+
+/* ========================================
+   PÁGINA DE AJUDA
+======================================== */
+
+.pagina-ajuda {
+  min-height: 100vh;
+}
+
+.ajuda-conteudo {
+  width: min(1180px, calc(100% - 40px));
+  margin: 40px auto;
+  padding-bottom: 60px;
+}
+
+.ajuda-cabecalho {
+  margin-bottom: 30px;
+}
+
+.ajuda-cabecalho > span {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #08705f;
+
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.ajuda-cabecalho h1 {
+  margin: 0 0 10px;
+
+  color: #37454b;
+
+  font-size: 32px;
+}
+
+.ajuda-cabecalho p {
+  max-width: 650px;
+
+  margin: 0;
+
+  color: #665c52;
+
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+
+/* ========================================
+   CARDS
+======================================== */
+
+.ajuda-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 20px;
+}
+
+.ajuda-card {
+  min-height: 190px;
+
+  padding: 25px;
+
+  background: #e6e1cf;
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 8px 22px
+    rgba(0, 0, 0, 0.08);
+}
+
+.ajuda-card > span {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  height: 36px;
+
+  margin-bottom: 18px;
+
+  border-radius: 50%;
+
+  background: #74b3a7;
+
+  color: #ffffff;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ajuda-card h2 {
+  margin: 0 0 10px;
+
+  color: #37454b;
+
+  font-size: 19px;
+}
+
+.ajuda-card p {
+  margin: 0;
+
+  color: #665c52;
+
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+
+/* ========================================
+   AVISAR BUG
+======================================== */
+
+.ajuda-bug {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 30px;
+
+  margin-top: 30px;
+  padding: 28px 32px;
+
+  background: #a3ccaf;
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 8px 22px
+    rgba(0, 0, 0, 0.08);
+}
+
+.ajuda-bug span {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #08705f;
+
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.ajuda-bug h2 {
+  margin: 0 0 7px;
+
+  color: #37454b;
+
+  font-size: 22px;
+}
+
+.ajuda-bug p {
+  margin: 0;
+
+  color: #665c52;
+
+  font-size: 14px;
+}
+
+.ajuda-bug-botao {
+  flex-shrink: 0;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 12px 22px;
+
+  border-radius: 10px;
+
+  background: #cc5b14;
+
+  color: #ffffff;
+
+  text-decoration: none;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.ajuda-bug-botao:hover {
+  background: #a9470d;
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 5px 12px
+    rgba(0, 0, 0, 0.15);
+}
+
+
+/* ========================================
+   RESPONSIVO
+======================================== */
+
+@media (max-width: 900px) {
+  .ajuda-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .ajuda-conteudo {
+    width: min(
+      100% - 24px,
+      1180px
+    );
+
+    margin-top: 25px;
+  }
+
+  .ajuda-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ajuda-bug {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ajuda-bug-botao {
+    width: 100%;
+  }
+
+  .ajuda-cabecalho h1 {
+    font-size: 27px;
+  }
+}
+
+/* ========================================
+   FUNDO - PÁGINA DE AJUDA
+======================================== */
+
+.pagina-ajuda {
+  min-height: 100vh;
+
+  background-image:
+    linear-gradient(
+      rgba(255, 255, 255, 0.12),
+      rgba(255, 255, 255, 0.12)
+    ),
+    url('./assets/fundo.jpg');
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.ajuda-conteudo {
+  width: min(1180px, calc(100% - 40px));
+
+  margin: 40px auto 0;
+
+  padding: 30px;
+  padding-bottom: 40px;
+
+  background: rgba(255, 255, 255, 0.88);
+
+  border-radius: 22px;
+
+  box-shadow:
+    0 10px 30px
+    rgba(0, 0, 0, 0.08);
+}
+
+.ajuda-bug-botao {
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}

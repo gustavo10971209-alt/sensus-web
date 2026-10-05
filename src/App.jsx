@@ -14,6 +14,7 @@ import Pacientes from './pages/Pacientes'
 import Relatorios from './pages/Relatorios'
 import RedefinirSenha from './pages/RedefinirSenha'
 import Perfil from './pages/Perfil'
+import Ajuda from './pages/Ajuda'
 
 import RotaProtegida from './components/RotaProtegida'
 
@@ -93,6 +94,15 @@ function App() {
           element={
             <RotaProtegida>
               <Perfil />
+            </RotaProtegida>
+          }
+        />
+
+        <Route
+          path="/ajuda"
+          element={
+            <RotaProtegida>
+              <Ajuda />
             </RotaProtegida>
           }
         />
