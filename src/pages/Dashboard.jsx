@@ -139,11 +139,11 @@ function Dashboard() {
         ])
 
         setPacientes(
-          pacientesBanco
+          pacientesBanco || []
         )
 
         setAgendamentos(
-          agendamentosRecebidos
+          agendamentosRecebidos || []
         )
       } catch (error) {
         console.error(
@@ -183,7 +183,9 @@ function Dashboard() {
             pacienteSelecionado.id
           )
 
-        setEmocoes(dados)
+        setEmocoes(
+          dados || []
+        )
       } catch (error) {
         console.error(
           'Erro ao carregar emoções:',
@@ -204,7 +206,7 @@ function Dashboard() {
   }, [pacienteSelecionado])
 
   // =========================================
-  // MODAL
+  // MODAL DE PACIENTES
   // =========================================
 
   function abrirModalPacientes() {
@@ -350,7 +352,9 @@ function Dashboard() {
             pacienteSelecionado={
               pacienteSelecionado
             }
-            emocoes={emocoes}
+            emocoes={
+              emocoes
+            }
             carregandoEmocoes={
               carregandoEmocoes
             }
@@ -371,7 +375,7 @@ function Dashboard() {
             }
           />
 
-          {/* BLOCO DE NOTAS DO PACIENTE */}
+          {/* BLOCO DE NOTAS */}
 
           {pacienteSelecionado && (
             <BlocoNotas
@@ -384,7 +388,7 @@ function Dashboard() {
 
         </section>
 
-        {/* AGENDA */}
+        {/* PRÓXIMOS AGENDAMENTOS */}
 
         <ProximosAgendamentos
           agendamentos={
@@ -392,6 +396,10 @@ function Dashboard() {
           }
           pacientes={
             pacientes
+          }
+          psicologoId={
+            psicologo
+              ?.Psychologist_ID
           }
           onAbrirAgenda={
             abrirAgenda
@@ -407,7 +415,9 @@ function Dashboard() {
         <button
           type="button"
           className="atalho-item"
-          onClick={abrirAgenda}
+          onClick={
+            abrirAgenda
+          }
         >
 
           <span className="atalho-icone">
@@ -423,7 +433,9 @@ function Dashboard() {
         <button
           type="button"
           className="atalho-item"
-          onClick={abrirAjuda}
+          onClick={
+            abrirAjuda
+          }
         >
 
           <span className="atalho-icone">

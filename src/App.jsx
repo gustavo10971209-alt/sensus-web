@@ -15,6 +15,8 @@ import Relatorios from './pages/Relatorios'
 import RedefinirSenha from './pages/RedefinirSenha'
 import Perfil from './pages/Perfil'
 import Ajuda from './pages/Ajuda'
+import AjudaDetalhe
+  from './pages/AjudaDetalhe'
 
 import RotaProtegida from './components/RotaProtegida'
 
@@ -106,6 +108,15 @@ function App() {
             </RotaProtegida>
           }
         />
+
+        <Route
+  path="/ajuda/:secao"
+  element={
+    <RotaProtegida>
+      <AjudaDetalhe />
+    </RotaProtegida>
+  }
+/>
 
         {/* ===============================================
             REDIRECIONAMENTOS

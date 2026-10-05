@@ -1,5 +1,29 @@
 import { supabase } from './supabase'
 
+const CAMPOS_PSICOLOGO = `
+  Psychologist_ID,
+  Auth_User_ID,
+  Name,
+  Birth_Date,
+  City,
+  State,
+  Country,
+  CRP,
+  Phone,
+  Active,
+  Created_At,
+  Updated_At
+`
+
+function textoOuNull(valor) {
+  const texto =
+    typeof valor === 'string'
+      ? valor.trim()
+      : ''
+
+  return texto || null
+}
+
 // =========================================================
 // LOGIN
 // =========================================================
@@ -8,14 +32,14 @@ export async function loginPsicologo(
   email,
   senha
 ) {
-  // Primeiro fazemos o login normal no Supabase Auth.
   const {
     data,
     error,
-  } = await supabase.auth.signInWithPassword({
-    email,
-    password: senha,
-  })
+  } =
+    await supabase.auth.signInWithPassword({
+      email,
+      password: senha,
+    })
 
   if (error) {
     throw new Error(
@@ -32,37 +56,18 @@ export async function loginPsicologo(
     )
   }
 
-  // =======================================================
-  // VERIFICAR SE É PSICÓLOGO
-  // =======================================================
-
   const {
     data: psicologo,
     error: erroPsicologo,
   } = await supabase
     .from('Psychologists')
-    .select(`
-      Psychologist_ID,
-      Auth_User_ID,
-      Name,
-      CRP,
-      Phone,
-      Active,
-      Created_At,
-      Updated_At
-    `)
+    .select(CAMPOS_PSICOLOGO)
     .eq(
       'Auth_User_ID',
       usuario.id
     )
     .maybeSingle()
 
-  /*
-    Se não existir na Psychologists,
-    esse usuário não pode usar a versão Web.
-
-    Isso inclui os pacientes do Android.
-  */
   if (
     erroPsicologo ||
     !psicologo
@@ -95,7 +100,8 @@ export async function loginPsicologo(
 export async function logoutPsicologo() {
   const {
     error,
-  } = await supabase.auth.signOut()
+  } =
+    await supabase.auth.signOut()
 
   if (error) {
     throw error
@@ -103,7 +109,7 @@ export async function logoutPsicologo() {
 }
 
 // =========================================================
-// SESSÃO ATUAL
+// SESSÃO
 // =========================================================
 
 export async function buscarSessaoAtual() {
@@ -117,14 +123,11 @@ export async function buscarSessaoAtual() {
     throw error
   }
 
-  return (
-    data.session ||
-    null
-  )
+  return data.session || null
 }
 
 // =========================================================
-// PERFIL DO PSICÓLOGO LOGADO
+// PSICÓLOGO LOGADO
 // =========================================================
 
 export async function buscarPsicologoLogado() {
@@ -148,16 +151,7 @@ export async function buscarPsicologoLogado() {
     error,
   } = await supabase
     .from('Psychologists')
-    .select(`
-      Psychologist_ID,
-      Auth_User_ID,
-      Name,
-      CRP,
-      Phone,
-      Active,
-      Created_At,
-      Updated_At
-    `)
+    .select(CAMPOS_PSICOLOGO)
     .eq(
       'Auth_User_ID',
       user.id
@@ -182,25 +176,30 @@ export async function buscarPsicologoLogado() {
 
   return {
     ...data,
-    Email: user.email,
+    Email: user.email || '',
   }
 }
 
 // =========================================================
-// ATUALIZAR PERFIL DO PSICÓLOGO
+// ATUALIZAR PERFIL
 // =========================================================
 
 export async function atualizarPsicologoLogado({
   nome,
-  crp,
+  dataNascimento,
+  cidade,
+  estado,
+  pais,
   telefone,
+  crp,
 }) {
   const {
     data: {
       user,
     },
     error: erroUsuario,
-  } = await supabase.auth.getUser()
+  } =
+    await supabase.auth.getUser()
 
   if (
     erroUsuario ||
@@ -211,17 +210,53 @@ export async function atualizarPsicologoLogado({
     )
   }
 
+  const nomeLimpo =
+    nome?.trim() || ''
+
+  if (!nomeLimpo) {
+    throw new Error(
+      'Informe seu nome.'
+    )
+  }
+
   const {
     data,
     error,
   } = await supabase
     .from('Psychologists')
     .update({
-      Name: nome.trim(),
-      CRP:
-        crp.trim() || null,
+      Name:
+        nomeLimpo,
+
+      Birth_Date:
+        dataNascimento ||
+        null,
+
+      City:
+        textoOuNull(
+          cidade
+        ),
+
+      State:
+        textoOuNull(
+          estado
+        ),
+
+      Country:
+        textoOuNull(
+          pais
+        ),
+
       Phone:
-        telefone.trim() || null,
+        textoOuNull(
+          telefone
+        ),
+
+      CRP:
+        textoOuNull(
+          crp
+        ),
+
       Updated_At:
         new Date().toISOString(),
     })
@@ -229,16 +264,7 @@ export async function atualizarPsicologoLogado({
       'Auth_User_ID',
       user.id
     )
-    .select(`
-      Psychologist_ID,
-      Auth_User_ID,
-      Name,
-      CRP,
-      Phone,
-      Active,
-      Created_At,
-      Updated_At
-    `)
+    .select(CAMPOS_PSICOLOGO)
     .single()
 
   if (error) {
@@ -254,6 +280,6 @@ export async function atualizarPsicologoLogado({
 
   return {
     ...data,
-    Email: user.email,
+    Email: user.email || '',
   }
 }

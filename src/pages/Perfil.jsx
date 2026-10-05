@@ -18,12 +18,50 @@ import {
   supabase,
 } from '../services/supabase'
 
-function Perfil() {
-  const navigate = useNavigate()
+const FORMULARIO_VAZIO = {
+  nome: '',
+  dataNascimento: '',
+  cidade: '',
+  estado: '',
+  pais: '',
+  telefone: '',
+  email: '',
+  crp: '',
+}
 
-  // =========================================
-  // PERFIL
-  // =========================================
+function transformarPerfilEmFormulario(
+  dados
+) {
+  return {
+    nome:
+      dados?.Name || '',
+
+    dataNascimento:
+      dados?.Birth_Date || '',
+
+    cidade:
+      dados?.City || '',
+
+    estado:
+      dados?.State || '',
+
+    pais:
+      dados?.Country || '',
+
+    telefone:
+      dados?.Phone || '',
+
+    email:
+      dados?.Email || '',
+
+    crp:
+      dados?.CRP || '',
+  }
+}
+
+function Perfil() {
+  const navigate =
+    useNavigate()
 
   const [
     psicologo,
@@ -31,19 +69,11 @@ function Perfil() {
   ] = useState(null)
 
   const [
-    nome,
-    setNome,
-  ] = useState('')
-
-  const [
-    crp,
-    setCrp,
-  ] = useState('')
-
-  const [
-    telefone,
-    setTelefone,
-  ] = useState('')
+    formulario,
+    setFormulario,
+  ] = useState(
+    FORMULARIO_VAZIO
+  )
 
   const [
     editando,
@@ -70,9 +100,9 @@ function Perfil() {
     setErro,
   ] = useState('')
 
-  // =========================================
+  // =======================================================
   // SENHA
-  // =========================================
+  // =======================================================
 
   const [
     alterandoSenha,
@@ -104,9 +134,9 @@ function Perfil() {
     setMensagemSenha,
   ] = useState('')
 
-  // =========================================
+  // =======================================================
   // CARREGAR PERFIL
-  // =========================================
+  // =======================================================
 
   useEffect(() => {
     async function carregarPerfil() {
@@ -128,18 +158,14 @@ function Perfil() {
           return
         }
 
-        setPsicologo(dados)
-
-        setNome(
-          dados.Name || ''
+        setPsicologo(
+          dados
         )
 
-        setCrp(
-          dados.CRP || ''
-        )
-
-        setTelefone(
-          dados.Phone || ''
+        setFormulario(
+          transformarPerfilEmFormulario(
+            dados
+          )
         )
       } catch (error) {
         console.error(
@@ -158,9 +184,21 @@ function Perfil() {
     carregarPerfil()
   }, [navigate])
 
-  // =========================================
-  // EDIÇÃO DO PERFIL
-  // =========================================
+  // =======================================================
+  // FORMULÁRIO
+  // =======================================================
+
+  function alterarCampo(
+    campo,
+    valor
+  ) {
+    setFormulario(
+      (atual) => ({
+        ...atual,
+        [campo]: valor,
+      })
+    )
+  }
 
   function iniciarEdicao() {
     setMensagem('')
@@ -169,16 +207,10 @@ function Perfil() {
   }
 
   function cancelarEdicao() {
-    setNome(
-      psicologo?.Name || ''
-    )
-
-    setCrp(
-      psicologo?.CRP || ''
-    )
-
-    setTelefone(
-      psicologo?.Phone || ''
+    setFormulario(
+      transformarPerfilEmFormulario(
+        psicologo
+      )
     )
 
     setErro('')
@@ -186,14 +218,38 @@ function Perfil() {
     setEditando(false)
   }
 
+  // =======================================================
+  // SALVAR PERFIL
+  // =======================================================
+
   async function salvarPerfil(
     event
   ) {
     event.preventDefault()
 
-    if (!nome.trim()) {
+    const {
+      nome,
+      dataNascimento,
+      cidade,
+      estado,
+      pais,
+      telefone,
+      email,
+      crp,
+    } = formulario
+
+    if (
+      !nome.trim() ||
+      !dataNascimento ||
+      !cidade.trim() ||
+      !estado.trim() ||
+      !pais.trim() ||
+      !telefone.trim() ||
+      !email.trim() ||
+      !crp.trim()
+    ) {
       setErro(
-        'Informe seu nome.'
+        'Preencha todos os dados do perfil.'
       )
 
       return
@@ -207,29 +263,39 @@ function Perfil() {
       const atualizado =
         await atualizarPsicologoLogado({
           nome,
-          crp,
+          dataNascimento,
+          cidade,
+          estado,
+          pais,
           telefone,
+          email,
+          crp,
         })
 
-      setPsicologo(atualizado)
-
-      setNome(
-        atualizado.Name || ''
+      setPsicologo(
+        atualizado
       )
 
-      setCrp(
-        atualizado.CRP || ''
-      )
-
-      setTelefone(
-        atualizado.Phone || ''
+      setFormulario(
+        transformarPerfilEmFormulario(
+          atualizado
+        )
       )
 
       setEditando(false)
 
-      setMensagem(
-        'Perfil atualizado com sucesso.'
-      )
+      if (
+        atualizado
+          .EmailChangeRequested
+      ) {
+        setMensagem(
+          'Dados salvos. Se o Supabase solicitar confirmação do novo e-mail, confirme pelo link enviado.'
+        )
+      } else {
+        setMensagem(
+          'Perfil atualizado com sucesso.'
+        )
+      }
     } catch (error) {
       console.error(
         'Erro ao salvar perfil:',
@@ -245,9 +311,9 @@ function Perfil() {
     }
   }
 
-  // =========================================
-  // ALTERAÇÃO DE SENHA
-  // =========================================
+  // =======================================================
+  // SENHA
+  // =======================================================
 
   function abrirAlteracaoSenha() {
     setNovaSenha('')
@@ -261,6 +327,7 @@ function Perfil() {
     setNovaSenha('')
     setConfirmarSenha('')
     setErroSenha('')
+    setMensagemSenha('')
     setAlterandoSenha(false)
   }
 
@@ -272,7 +339,9 @@ function Perfil() {
     setErroSenha('')
     setMensagemSenha('')
 
-    if (novaSenha.length < 6) {
+    if (
+      novaSenha.length < 6
+    ) {
       setErroSenha(
         'A senha deve possuir pelo menos 6 caracteres.'
       )
@@ -298,7 +367,8 @@ function Perfil() {
         error,
       } =
         await supabase.auth.updateUser({
-          password: novaSenha,
+          password:
+            novaSenha,
         })
 
       if (error) {
@@ -326,9 +396,9 @@ function Perfil() {
     }
   }
 
-  // =========================================
-  // LOGOUT
-  // =========================================
+  // =======================================================
+  // SAIR
+  // =======================================================
 
   async function sair() {
     try {
@@ -348,9 +418,9 @@ function Perfil() {
     }
   }
 
-  // =========================================
+  // =======================================================
   // CARREGAMENTO
-  // =========================================
+  // =======================================================
 
   if (carregando) {
     return (
@@ -362,14 +432,12 @@ function Perfil() {
     )
   }
 
-  // =========================================
+  // =======================================================
   // TELA
-  // =========================================
+  // =======================================================
 
   return (
     <main className="pagina-dashboard">
-
-      {/* CABEÇALHO */}
 
       <header className="dashboard-header">
 
@@ -416,8 +484,6 @@ function Perfil() {
 
       </header>
 
-      {/* CONTEÚDO */}
-
       <section className="dashboard-conteudo">
 
         <section className="dashboard-principal perfil-pagina">
@@ -440,10 +506,12 @@ function Perfil() {
 
           </div>
 
-          {/* DADOS PROFISSIONAIS */}
+          {/* DADOS DO PERFIL */}
 
           <form
-            onSubmit={salvarPerfil}
+            onSubmit={
+              salvarPerfil
+            }
             className="perfil-formulario"
           >
 
@@ -458,9 +526,12 @@ function Perfil() {
                 <input
                   id="perfil-nome"
                   type="text"
-                  value={nome}
+                  value={
+                    formulario.nome
+                  }
                   onChange={(event) =>
-                    setNome(
+                    alterarCampo(
+                      'nome',
                       event.target.value
                     )
                   }
@@ -472,17 +543,72 @@ function Perfil() {
 
               <div className="campo">
 
-                <label htmlFor="perfil-email">
-                  E-mail
+                <label htmlFor="perfil-nascimento">
+                  Data de nascimento
                 </label>
 
                 <input
-                  id="perfil-email"
-                  type="email"
+                  id="perfil-nascimento"
+                  type="date"
                   value={
-                    psicologo?.Email || ''
+                    formulario
+                      .dataNascimento
                   }
-                  disabled
+                  onChange={(event) =>
+                    alterarCampo(
+                      'dataNascimento',
+                      event.target.value
+                    )
+                  }
+                  disabled={!editando}
+                  required
+                />
+
+              </div>
+
+              <div className="campo">
+
+  <label htmlFor="perfil-email">
+    E-mail
+  </label>
+
+  <input
+    id="perfil-email"
+    type="email"
+    value={
+      formulario.email
+    }
+    disabled
+  />
+
+</div>
+
+              <div className="campo">
+
+                <label htmlFor="perfil-telefone">
+                  Número de celular
+                </label>
+
+                <input
+                  id="perfil-telefone"
+                  type="tel"
+                  value={
+                    formulario.telefone
+                  }
+                  onChange={(event) =>
+                    alterarCampo(
+                      'telefone',
+                      event.target.value
+                    )
+                  }
+                  placeholder={
+                    editando
+                      ? '(00) 00000-0000'
+                      : 'Não informado'
+                  }
+                  maxLength={20}
+                  disabled={!editando}
+                  required
                 />
 
               </div>
@@ -496,9 +622,12 @@ function Perfil() {
                 <input
                   id="perfil-crp"
                   type="text"
-                  value={crp}
+                  value={
+                    formulario.crp
+                  }
                   onChange={(event) =>
-                    setCrp(
+                    alterarCampo(
+                      'crp',
                       event.target.value
                     )
                   }
@@ -507,32 +636,84 @@ function Perfil() {
                       ? 'Ex.: 20/12345'
                       : 'Não informado'
                   }
+                  maxLength={30}
                   disabled={!editando}
+                  required
                 />
 
               </div>
 
               <div className="campo">
 
-                <label htmlFor="perfil-telefone">
-                  Telefone
+                <label htmlFor="perfil-cidade">
+                  Cidade
                 </label>
 
                 <input
-                  id="perfil-telefone"
-                  type="tel"
-                  value={telefone}
+                  id="perfil-cidade"
+                  type="text"
+                  value={
+                    formulario.cidade
+                  }
                   onChange={(event) =>
-                    setTelefone(
+                    alterarCampo(
+                      'cidade',
                       event.target.value
                     )
                   }
-                  placeholder={
-                    editando
-                      ? '(00) 00000-0000'
-                      : 'Não informado'
-                  }
+                  placeholder="Cidade"
                   disabled={!editando}
+                  required
+                />
+
+              </div>
+
+              <div className="campo">
+
+                <label htmlFor="perfil-estado">
+                  Estado
+                </label>
+
+                <input
+                  id="perfil-estado"
+                  type="text"
+                  value={
+                    formulario.estado
+                  }
+                  onChange={(event) =>
+                    alterarCampo(
+                      'estado',
+                      event.target.value
+                    )
+                  }
+                  placeholder="Estado"
+                  disabled={!editando}
+                  required
+                />
+
+              </div>
+
+              <div className="campo">
+
+                <label htmlFor="perfil-pais">
+                  País
+                </label>
+
+                <input
+                  id="perfil-pais"
+                  type="text"
+                  value={
+                    formulario.pais
+                  }
+                  onChange={(event) =>
+                    alterarCampo(
+                      'pais',
+                      event.target.value
+                    )
+                  }
+                  placeholder="País"
+                  disabled={!editando}
+                  required
                 />
 
               </div>
@@ -560,19 +741,24 @@ function Perfil() {
                 <button
                   type="button"
                   className="botao-entrar perfil-botao-principal"
-                  onClick={iniciarEdicao}
+                  onClick={
+                    iniciarEdicao
+                  }
                 >
                   Editar perfil
                 </button>
               ) : (
                 <>
+
                   <button
                     type="button"
                     className="perfil-botao-cancelar"
                     onClick={
                       cancelarEdicao
                     }
-                    disabled={salvando}
+                    disabled={
+                      salvando
+                    }
                   >
                     Cancelar
                   </button>
@@ -580,12 +766,15 @@ function Perfil() {
                   <button
                     type="submit"
                     className="botao-entrar perfil-botao-principal"
-                    disabled={salvando}
+                    disabled={
+                      salvando
+                    }
                   >
                     {salvando
                       ? 'Salvando...'
                       : 'Salvar alterações'}
                   </button>
+
                 </>
               )}
 
@@ -600,6 +789,7 @@ function Perfil() {
             <div className="perfil-seguranca-cabecalho">
 
               <div>
+
                 <span className="perfil-seguranca-etiqueta">
                   SEGURANÇA
                 </span>
@@ -612,6 +802,7 @@ function Perfil() {
                   Altere sua senha de acesso
                   ao SENSUS-MAP.
                 </p>
+
               </div>
 
               {!alterandoSenha && (
@@ -636,7 +827,9 @@ function Perfil() {
 
             {alterandoSenha && (
               <form
-                onSubmit={alterarSenha}
+                onSubmit={
+                  alterarSenha
+                }
                 className="perfil-formulario-senha"
               >
 
@@ -651,7 +844,9 @@ function Perfil() {
                     <input
                       id="nova-senha"
                       type="password"
-                      value={novaSenha}
+                      value={
+                        novaSenha
+                      }
                       onChange={(event) =>
                         setNovaSenha(
                           event.target.value
@@ -673,7 +868,9 @@ function Perfil() {
                     <input
                       id="confirmar-senha"
                       type="password"
-                      value={confirmarSenha}
+                      value={
+                        confirmarSenha
+                      }
                       onChange={(event) =>
                         setConfirmarSenha(
                           event.target.value
@@ -705,7 +902,9 @@ function Perfil() {
                     onClick={
                       cancelarAlteracaoSenha
                     }
-                    disabled={salvandoSenha}
+                    disabled={
+                      salvandoSenha
+                    }
                   >
                     Cancelar
                   </button>
@@ -713,7 +912,9 @@ function Perfil() {
                   <button
                     type="submit"
                     className="botao-entrar perfil-botao-principal"
-                    disabled={salvandoSenha}
+                    disabled={
+                      salvandoSenha
+                    }
                   >
                     {salvandoSenha
                       ? 'Alterando...'

@@ -3,16 +3,21 @@ import {
   useNavigate,
 } from 'react-router-dom'
 
-function Ajuda() {
-  const navigate = useNavigate()
+import {
+  topicosAjuda,
+} from '../data/ajudaConteudo'
 
-  function voltar() {
-    navigate('/dashboard')
+function Ajuda() {
+  const navigate =
+    useNavigate()
+
+  function abrirPerfil() {
+    navigate('/perfil')
   }
 
   function avisarBug() {
     window.open(
-      'https://web.whatsapp.com/send/?phone=5592988274824&text=Quero+relatar+um+bug&type=phone_number&app_absent=0',
+      'https://wa.me/5592988274824?text=Quero%20relatar%20um%20bug',
       '_blank',
       'noopener,noreferrer'
     )
@@ -20,6 +25,8 @@ function Ajuda() {
 
   return (
     <main className="pagina-ajuda">
+
+      {/* NAVBAR */}
 
       <header className="dashboard-header">
 
@@ -47,19 +54,25 @@ function Ajuda() {
 
         </nav>
 
-        <button
-          type="button"
-          className="botao-perfil"
-          onClick={voltar}
-        >
-          Voltar
-        </button>
+        <div className="dashboard-usuario">
+
+          <button
+            type="button"
+            className="botao-perfil"
+            onClick={abrirPerfil}
+          >
+            Perfil
+          </button>
+
+        </div>
 
       </header>
 
+      {/* CENTRAL DE AJUDA */}
+
       <section className="ajuda-conteudo">
 
-        <div className="ajuda-cabecalho">
+        <header className="ajuda-cabecalho">
 
           <span>
             CENTRAL DE AJUDA
@@ -75,108 +88,55 @@ function Ajuda() {
             fazer em cada uma delas.
           </p>
 
-        </div>
+        </header>
+
+        {/* CARDS */}
 
         <div className="ajuda-grid">
 
-          <article className="ajuda-card">
-            <span>01</span>
+          {topicosAjuda.map(
+            (topico) => (
+              <Link
+                key={topico.slug}
+                to={`/ajuda/${topico.slug}`}
+                className="ajuda-card-link"
+              >
 
-            <h2>
-              Início
-            </h2>
+                <article className="ajuda-card">
 
-            <p>
-              Visualize rapidamente um
-              paciente, acompanhe seus
-              registros emocionais,
-              consulte o gráfico e
-              registre observações.
-            </p>
-          </article>
+                  <span>
+                    {topico.numero}
+                  </span>
 
-          <article className="ajuda-card">
-            <span>02</span>
+                  <h2>
+                    {topico.titulo}
+                  </h2>
 
-            <h2>
-              Pacientes
-            </h2>
+                  <p>
+                    {topico.resumo}
+                  </p>
 
-            <p>
-              Consulte os dados dos
-              pacientes, registros
-              emocionais e anotações
-              realizadas durante o
-              acompanhamento.
-            </p>
-          </article>
+                  <div className="ajuda-card-abrir">
+                    Ver guia
+                    <strong>
+                      →
+                    </strong>
+                  </div>
 
-          <article className="ajuda-card">
-            <span>03</span>
+                </article>
 
-            <h2>
-              Agenda
-            </h2>
-
-            <p>
-              Crie e organize
-              agendamentos, consulte
-              consultas futuras e
-              acompanhe quem criou ou
-              alterou cada registro.
-            </p>
-          </article>
-
-          <article className="ajuda-card">
-            <span>04</span>
-
-            <h2>
-              Relatórios
-            </h2>
-
-            <p>
-              Gere análises dos registros
-              emocionais, escolha períodos
-              específicos e exporte os
-              resultados em PDF.
-            </p>
-          </article>
-
-          <article className="ajuda-card">
-            <span>05</span>
-
-            <h2>
-              Anotações
-            </h2>
-
-            <p>
-              Registre observações sobre
-              os pacientes. As anotações
-              ficam associadas ao paciente
-              e ao psicólogo responsável.
-            </p>
-          </article>
-
-          <article className="ajuda-card">
-            <span>06</span>
-
-            <h2>
-              Perfil
-            </h2>
-
-            <p>
-              Consulte e atualize seus
-              dados profissionais, como
-              nome, CRP e telefone, além
-              de alterar sua senha.
-            </p>
-          </article>
+              </Link>
+            )
+          )}
 
         </div>
+
+        {/* SUPORTE */}
 
         <section className="ajuda-bug">
 
           <div>
+
             <span>
               SUPORTE
             </span>
@@ -190,6 +150,7 @@ function Ajuda() {
               comportamentos inesperados
               encontrados no SENSUS-MAP.
             </p>
+
           </div>
 
           <button
