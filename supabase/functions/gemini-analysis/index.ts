@@ -1,10 +1,5 @@
-import {
-  withSupabase,
-} from 'npm:@supabase/server@1'
-
-import {
-  GoogleGenAI,
-} from 'npm:@google/genai'
+import { createClient } from 'npm:@supabase/supabase-js@2'
+import { GoogleGenAI } from 'npm:@google/genai'
 
 const MODELO = 'gemini-3.6-flash'
 
@@ -41,234 +36,145 @@ IMPORTANTE
 No final, informe que a análise é apenas apoio baseado nos registros apresentados e não representa diagnóstico.
 `
 
-function respostaJson(
-  corpo: object,
-  status = 200,
-) {
-  return new Response(
-    JSON.stringify(corpo),
-    {
-      status,
-
-      headers: {
-        'Content-Type':
-          'application/json',
-      },
-    },
-  )
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-export default {
-  fetch: withSupabase(
-    {
-      auth: 'user',
+function respostaJson(corpo: object, status = 200) {
+  return new Response(JSON.stringify(corpo), {
+    status,
+    headers: {
+      ...corsHeaders,
+      'Content-Type': 'application/json',
     },
+  })
+}
 
-    async (
-      req,
-      ctx,
-    ) => {
-      // =====================================
-      // SOMENTE POST
-      // =====================================
+Deno.serve(async (req) => {
+  // =====================================
+  // CORS PREFLIGHT
+  // =====================================
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
 
-      if (
-        req.method !== 'POST'
-      ) {
-        return respostaJson(
-          {
-            error:
-              'Método não permitido.',
-          },
-          405,
-        )
-      }
+  // =====================================
+  // SOMENTE POST
+  // =====================================
+  if (req.method !== 'POST') {
+    return respostaJson({ error: 'Método não permitido.' }, 405)
+  }
 
-      // =====================================
-      // USUÁRIO AUTENTICADO
-      // =====================================
+  // =====================================
+  // INICIALIZAR SUPABASE E LER TOKEN
+  // =====================================
+  const authHeader = req.headers.get('Authorization')
+  
+  if (!authHeader) {
+    return respostaJson({ error: 'Token de autorização ausente.' }, 401)
+  }
 
-      const usuarioId =
-        ctx.userClaims?.sub
+  const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
+  const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? ''
 
-      if (!usuarioId) {
-        return respostaJson(
-          {
-            error:
-              'Usuário não autenticado.',
-          },
-          401,
-        )
-      }
+  // Cria o cliente repassando o token do usuário para que o RLS e a função getUser funcionem
+  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    global: {
+      headers: { Authorization: authHeader },
+    },
+  })
 
-      // =====================================
-      // VERIFICAR PSICÓLOGO
-      // =====================================
+  // =====================================
+  // USUÁRIO AUTENTICADO
+  // =====================================
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-      const {
-        data: psicologo,
-        error: erroPsicologo,
-      } = await ctx.supabase
-        .from('Psychologists')
-        .select(`
-          Psychologist_ID,
-          Active
-        `)
-        .eq(
-          'Auth_User_ID',
-          usuarioId,
-        )
-        .eq(
-          'Active',
-          true,
-        )
-        .maybeSingle()
+  if (authError || !user) {
+    return respostaJson({ error: 'Usuário não autenticado.' }, 401)
+  }
 
-      if (
-        erroPsicologo ||
-        !psicologo
-      ) {
-        console.error(
-          'Erro ao verificar psicólogo:',
-          erroPsicologo,
-        )
+  const usuarioId = user.id
 
-        return respostaJson(
-          {
-            error:
-              'Acesso permitido apenas para psicólogos ativos.',
-          },
-          403,
-        )
-      }
+  // =====================================
+  // VERIFICAR PSICÓLOGO
+  // =====================================
+  const { data: psicologo, error: erroPsicologo } = await supabase
+    .from('Psychologists')
+    .select(`
+      Psychologist_ID,
+      Active
+    `)
+    .eq('Auth_User_ID', usuarioId)
+    .eq('Active', true)
+    .maybeSingle()
 
-      // =====================================
-      // LER CORPO
-      // =====================================
+  if (erroPsicologo || !psicologo) {
+    console.error('Erro ao verificar psicólogo:', erroPsicologo)
+    return respostaJson({ error: 'Acesso permitido apenas para psicólogos ativos.' }, 403)
+  }
 
-      let corpo
+  // =====================================
+  // LER CORPO
+  // =====================================
+  let corpo
 
-      try {
-        corpo =
-          await req.json()
-      } catch {
-        return respostaJson(
-          {
-            error:
-              'Dados inválidos.',
-          },
-          400,
-        )
-      }
+  try {
+    corpo = await req.json()
+  } catch {
+    return respostaJson({ error: 'Dados inválidos.' }, 400)
+  }
 
-      const {
-        periodoInicio,
-        periodoFim,
-        frequencias,
-      } = corpo
+  const { periodoInicio, periodoFim, frequencias } = corpo
 
-      // =====================================
-      // VALIDAR FREQUÊNCIAS
-      // =====================================
+  // =====================================
+  // VALIDAR FREQUÊNCIAS
+  // =====================================
+  if (!Array.isArray(frequencias) || frequencias.length === 0) {
+    return respostaJson({ error: 'Nenhum registro emocional foi enviado.' }, 400)
+  }
 
-      if (
-        !Array.isArray(
-          frequencias,
-        ) ||
-        frequencias.length === 0
-      ) {
-        return respostaJson(
-          {
-            error:
-              'Nenhum registro emocional foi enviado.',
-          },
-          400,
-        )
-      }
+  const frequenciasValidas = frequencias.every(
+    (item) =>
+      typeof item?.emocao === 'string' &&
+      typeof item?.quantidade === 'number' &&
+      item.quantidade >= 0,
+  )
 
-      const frequenciasValidas =
-        frequencias.every(
-          (item) =>
-            typeof item?.emocao ===
-              'string' &&
-            typeof item?.quantidade ===
-              'number' &&
-            item.quantidade >= 0,
-        )
+  if (!frequenciasValidas) {
+    return respostaJson({ error: 'Os registros emocionais possuem formato inválido.' }, 400)
+  }
 
-      if (!frequenciasValidas) {
-        return respostaJson(
-          {
-            error:
-              'Os registros emocionais possuem formato inválido.',
-          },
-          400,
-        )
-      }
+  // =====================================
+  // SOMAR REGISTROS
+  // =====================================
+  const totalRegistros = frequencias.reduce(
+    (total, item) => total + item.quantidade,
+    0,
+  )
 
-      // =====================================
-      // SOMAR REGISTROS
-      // =====================================
+  if (totalRegistros <= 0) {
+    return respostaJson({ error: 'Não existem registros suficientes para análise.' }, 400)
+  }
 
-      const totalRegistros =
-        frequencias.reduce(
-          (
-            total,
-            item,
-          ) =>
-            total +
-            item.quantidade,
-          0,
-        )
+  // =====================================
+  // PEGAR SECRET DO GEMINI
+  // =====================================
+  const geminiApiKey = Deno.env.get('GEMINI_API_KEY')
 
-      if (
-        totalRegistros <= 0
-      ) {
-        return respostaJson(
-          {
-            error:
-              'Não existem registros suficientes para análise.',
-          },
-          400,
-        )
-      }
+  if (!geminiApiKey) {
+    console.error('GEMINI_API_KEY não configurada.')
+    return respostaJson({ error: 'A integração com IA ainda não foi configurada.' }, 500)
+  }
 
-      // =====================================
-      // PEGAR SECRET DO GEMINI
-      // =====================================
+  // =====================================
+  // PREPARAR DADOS
+  // =====================================
+  const listaEmocoes = frequencias
+    .map((item) => `- ${item.emocao}: ${item.quantidade} registro(s)`)
+    .join('\n')
 
-      const geminiApiKey =
-        Deno.env.get(
-          'GEMINI_API_KEY',
-        )
-
-      if (!geminiApiKey) {
-        console.error(
-          'GEMINI_API_KEY não configurada.',
-        )
-
-        return respostaJson(
-          {
-            error:
-              'A integração com IA ainda não foi configurada.',
-          },
-          500,
-        )
-      }
-
-      // =====================================
-      // PREPARAR DADOS
-      // =====================================
-
-      const listaEmocoes =
-        frequencias
-          .map(
-            (item) =>
-              `- ${item.emocao}: ${item.quantidade} registro(s)`,
-          )
-          .join('\n')
-
-      const prompt = `
+  const prompt = `
 Analise os registros emocionais abaixo.
 
 Período inicial:
@@ -285,70 +191,37 @@ Frequências:
 ${listaEmocoes}
 `
 
-      // =====================================
-      // GEMINI
-      // =====================================
+  // =====================================
+  // GEMINI
+  // =====================================
+  try {
+    const ia = new GoogleGenAI({
+      apiKey: geminiApiKey,
+    })
 
-      try {
-        const ia =
-          new GoogleGenAI({
-            apiKey:
-              geminiApiKey,
-          })
+    const resposta = await ia.models.generateContent({
+      model: MODELO,
+      contents: prompt,
+      config: {
+        systemInstruction: INSTRUCAO_SISTEMA,
+        temperature: 0.2,
+        store: false,
+      },
+    })
 
-        const resposta =
-          await ia.models.generateContent({
-            model:
-              MODELO,
+    const analise = resposta.text?.trim()
 
-            contents:
-              prompt,
+    if (!analise) {
+      return respostaJson({ error: 'A IA não retornou uma resposta.' }, 502)
+    }
 
-            config: {
-              systemInstruction:
-                INSTRUCAO_SISTEMA,
-
-              temperature:
-                0.2,
-
-              store:
-                false,
-            },
-          })
-
-        const analise =
-          resposta.text?.trim()
-
-        if (!analise) {
-          return respostaJson(
-            {
-              error:
-                'A IA não retornou uma resposta.',
-            },
-            502,
-          )
-        }
-
-        return respostaJson({
-          analise,
-          modelo:
-            MODELO,
-          totalRegistros,
-        })
-      } catch (error) {
-        console.error(
-          'Erro ao consultar Gemini:',
-          error,
-        )
-
-        return respostaJson(
-          {
-            error:
-              'Não foi possível gerar a análise com IA.',
-          },
-          502,
-        )
-      }
-    },
-  ),
-}
+    return respostaJson({
+      analise,
+      modelo: MODELO,
+      totalRegistros,
+    })
+  } catch (error) {
+    console.error('Erro ao consultar Gemini:', error)
+    return respostaJson({ error: 'Não foi possível gerar a análise com IA.' }, 502)
+  }
+})
