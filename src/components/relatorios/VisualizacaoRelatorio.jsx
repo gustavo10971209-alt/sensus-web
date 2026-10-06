@@ -37,17 +37,24 @@ function obterCorEmocao(emocao) {
 // DATA
 // =========================================
 
-function obterDataRegistro(
-  dataHora
-) {
+function obterDataRegistro(dataHora) {
   if (!dataHora) {
     return ''
   }
 
-  return dataHora.slice(
-    0,
-    10
-  )
+  // Converte a string (que vem em UTC do Supabase) para o fuso local
+  const dataLocal = new Date(dataHora)
+  
+  // Fallback caso a string não seja uma data válida no formato esperado
+  if (isNaN(dataLocal.getTime())) {
+    return dataHora.slice(0, 10)
+  }
+
+  const ano = dataLocal.getFullYear()
+  const mes = String(dataLocal.getMonth() + 1).padStart(2, '0')
+  const dia = String(dataLocal.getDate()).padStart(2, '0')
+
+  return `${ano}-${mes}-${dia}`
 }
 
 function formatarData(
@@ -1132,14 +1139,9 @@ function VisualizacaoRelatorio({
         if (!dataHora) {
           return
         }
-
-        const hora =
-          Number(
-            dataHora.slice(
-              11,
-              13
-            )
-          )
+        
+        // Convertendo para o fuso local também para pegar a hora correta
+        const hora = new Date(dataHora).getHours()
 
         if (hora < 6) {
           periodos
